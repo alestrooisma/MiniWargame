@@ -1,9 +1,8 @@
 package mwg;
 
+import aetherdriven.view.Layer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
-
-import aetherdriven.view.Layer;
 
 public class BattleLayer implements Layer {
     // Owned
