@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
-public class Element implements Disposable {
+public class Element implements Comparable<Element>, Disposable {
     // Owned
     private final Vector2 position = new Vector2();
     // Not owned
@@ -29,5 +29,10 @@ public class Element implements Disposable {
     }
 
     public void dispose() {
+    }
+
+    @Override
+    public int compareTo(Element other) {
+        return Float.compare(other.position.y, this.position.y);
     }
 }

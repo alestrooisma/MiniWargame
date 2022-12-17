@@ -24,6 +24,7 @@ public class BattleLayer implements Layer {
 
     @Override
     public void render() {
+        elements.sort();
         batch.begin();
         for (Element e : elements) {
             batch.draw(e.getTexture(), e.getPosition().x, e.getPosition().y);
