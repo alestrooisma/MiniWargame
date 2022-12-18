@@ -10,6 +10,7 @@ public class BattleLayer implements Layer {
     // Owned
     private final SpriteBatch batch = new SpriteBatch();
     private final Array<Element> elements = new Array<>();
+    private final TweenEngine engine = new TweenEngine();
     // Not owned
     private final Camera cam;
     private Element selected = null;
@@ -28,6 +29,7 @@ public class BattleLayer implements Layer {
 
     @Override
     public void update(float dt) {
+        engine.update(dt);
     }
 
     @Override
@@ -56,8 +58,7 @@ public class BattleLayer implements Layer {
         if (button == Buttons.LEFT) {
             selected = e;
         } else if (selected != null && button == Buttons.RIGHT) {
-            selected.getPosition().x = x;
-            selected.getPosition().y = y;
+            engine.add(selected.getPosition(), x, y, 300);
         }
     }
 
