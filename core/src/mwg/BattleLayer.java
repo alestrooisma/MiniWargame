@@ -46,4 +46,19 @@ public class BattleLayer implements Layer {
             e.dispose();
         }
     }
+
+    public void touch(float x, float y) {
+        System.out.printf("Clicked (%.1f, %.1f)%n", x, y);
+
+        // Iterate the elements in reverse to get the topmost element
+        // for which the coordinates are in its "hit box".
+        for (int i = elements.size - 1; i >= 0; i--) {
+            Element e = elements.get(i);
+            if (x > e.getPosition().x && x < e.getPosition().x + e.getTexture().getWidth()
+                    && y > e.getPosition().y && y < e.getPosition().y + e.getTexture().getHeight()) {
+                System.out.println("Touched #" + i + "!");
+                break;
+            }
+        }
+    }
 }

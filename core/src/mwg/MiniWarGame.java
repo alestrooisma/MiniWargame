@@ -7,7 +7,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -36,7 +35,7 @@ public class MiniWarGame extends ApplicationAdapter {
         battleLayer.add(new Element(texture, 10, 10));
 
         // Set up the an input event listener
-        Gdx.input.setInputProcessor(new InputHandler(cam));
+        Gdx.input.setInputProcessor(new InputHandler(cam, battleLayer));
     }
 
     @Override
@@ -59,11 +58,13 @@ public class MiniWarGame extends ApplicationAdapter {
     private static class InputHandler extends InputAdapter {
         // Not owned
         private final Camera cam;
+        private final BattleLayer battleLayer;
         // Utilities
-        private Vector3 vec = new Vector3();
+        private final Vector3 vec = new Vector3();
 
-        public InputHandler(Camera cam) {
+        public InputHandler(Camera cam, BattleLayer battleLayer) {
             this.cam = cam;
+            this.battleLayer = battleLayer;
         }
 
         @Override
@@ -71,7 +72,7 @@ public class MiniWarGame extends ApplicationAdapter {
             if (pointer == 0) {
                 vec.set(screenX, screenY, 0);
                 cam.unproject(vec);
-                System.out.println(String.format("Clicked (%d, %d) => (%.1f, %.1f)", screenX, screenY, vec.x, vec.y));
+                battleLayer.touch(vec.x, vec.y);
             }
             return true;
         }
