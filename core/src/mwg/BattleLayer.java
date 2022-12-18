@@ -1,6 +1,7 @@
 package mwg;
 
 import aetherdriven.view.Layer;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
@@ -8,6 +9,12 @@ public class BattleLayer implements Layer {
     // Owned
     private final SpriteBatch batch = new SpriteBatch();
     private final Array<Element> elements = new Array<>();
+    // Not owned
+    private final Camera cam;
+
+    public BattleLayer(Camera cam) {
+        this.cam = cam;
+    }
 
     public void add(Element e) {
         elements.add(e);
@@ -15,7 +22,6 @@ public class BattleLayer implements Layer {
 
     @Override
     public void resize(int width, int height) {
-
     }
 
     @Override
@@ -25,6 +31,7 @@ public class BattleLayer implements Layer {
     @Override
     public void render() {
         elements.sort();
+        batch.setProjectionMatrix(cam.combined);
         batch.begin();
         for (Element e : elements) {
             batch.draw(e.getTexture(), e.getPosition().x, e.getPosition().y);

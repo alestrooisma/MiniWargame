@@ -5,18 +5,27 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class MiniWarGame extends ApplicationAdapter {
     // Owned
+    private ScreenViewport viewport;
     private View view;
     private Texture texture;
 
     @Override
     public void create() {
+        // Create a viewport
+        viewport = new ScreenViewport();
+        Camera cam = viewport.getCamera();
+
         // Create the view
         view = new View(0.2f, 0.2f, 0.2f);
-        BattleLayer battleLayer = new BattleLayer();
+        BattleLayer battleLayer = new BattleLayer(cam);
         view.add(battleLayer);
 
         // Populate Battle Layer (for testing purposes)
@@ -27,11 +36,12 @@ public class MiniWarGame extends ApplicationAdapter {
         battleLayer.add(new Element(texture, 10, 10));
 
         // Set up the an input event listener
-        Gdx.input.setInputProcessor(new InputHandler());
+        Gdx.input.setInputProcessor(new InputHandler(cam));
     }
 
     @Override
     public void resize(int width, int height) {
+        viewport.update(width, height, true);
         view.resize(width, height);
     }
 
@@ -47,6 +57,24 @@ public class MiniWarGame extends ApplicationAdapter {
     }
 
     private static class InputHandler extends InputAdapter {
+        // Not owned
+        private final Camera cam;
+        // Utilities
+        private Vector3 vec = new Vector3();
+
+        public InputHandler(Camera cam) {
+            this.cam = cam;
+        }
+
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            if (pointer == 0) {
+                vec.set(screenX, screenY, 0);
+                cam.unproject(vec);
+                System.out.println(String.format("Clicked (%d, %d) => (%.1f, %.1f)", screenX, screenY, vec.x, vec.y));
+            }
+            return true;
+        }
 
         @Override
         public boolean keyUp(int keycode) {
