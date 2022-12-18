@@ -1,6 +1,7 @@
 package mwg;
 
 import aetherdriven.view.Layer;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
@@ -11,6 +12,7 @@ public class BattleLayer implements Layer {
     private final Array<Element> elements = new Array<>();
     // Not owned
     private final Camera cam;
+    private Element selected = null;
 
     public BattleLayer(Camera cam) {
         this.cam = cam;
@@ -47,18 +49,32 @@ public class BattleLayer implements Layer {
         }
     }
 
-    public void touch(float x, float y) {
-        System.out.printf("Clicked (%.1f, %.1f)%n", x, y);
+    public void touch(int button, float x, float y) {
+        Element e = getElementAt(x, y);
+
+        // Notify the controller of a touched element (which may be null)
+        if (button == Buttons.LEFT) {
+            selected = e;
+        } else if (selected != null && button == Buttons.RIGHT) {
+            selected.getPosition().x = x;
+            selected.getPosition().y = y;
+        }
+    }
+
+    private Element getElementAt(float x, float y) {
+        Element touchedElement = null;
 
         // Iterate the elements in reverse to get the topmost element
         // for which the coordinates are in its "hit box".
-        for (int i = elements.size - 1; i >= 0; i--) {
+        for (int i = elements.size - 1; touchedElement == null && i >= 0; i--) {
             Element e = elements.get(i);
             if (x > e.getPosition().x && x < e.getPosition().x + e.getTexture().getWidth()
                     && y > e.getPosition().y && y < e.getPosition().y + e.getTexture().getHeight()) {
-                System.out.println("Touched #" + i + "!");
-                break;
+                touchedElement = e;
             }
         }
+
+        // Return the topmost element at (x, y), which may be null
+        return touchedElement;
     }
 }

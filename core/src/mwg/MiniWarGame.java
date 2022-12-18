@@ -72,7 +72,7 @@ public class MiniWarGame extends ApplicationAdapter {
             if (pointer == 0) {
                 vec.set(screenX, screenY, 0);
                 cam.unproject(vec);
-                battleLayer.touch(vec.x, vec.y);
+                battleLayer.touch(button, vec.x, vec.y);
             }
             return true;
         }
