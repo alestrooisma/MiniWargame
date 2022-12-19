@@ -38,7 +38,7 @@ public class BattleLayer implements Layer {
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
         for (Element e : elements) {
-            batch.draw(e.getTexture(), e.getPosition().x, e.getPosition().y);
+            e.getSkin().draw(batch, e.getPosition());
         }
         batch.end();
     }
@@ -69,8 +69,8 @@ public class BattleLayer implements Layer {
         // for which the coordinates are in its "hit box".
         for (int i = elements.size - 1; touchedElement == null && i >= 0; i--) {
             Element e = elements.get(i);
-            if (x > e.getPosition().x && x < e.getPosition().x + e.getTexture().getWidth()
-                    && y > e.getPosition().y && y < e.getPosition().y + e.getTexture().getHeight()) {
+            if (x > e.getPosition().x && x < e.getPosition().x + 72 //TODO fix!
+                    && y > e.getPosition().y && y < e.getPosition().y + 72) {
                 touchedElement = e;
             }
         }

@@ -14,7 +14,7 @@ public class MiniWarGame extends ApplicationAdapter {
     // Owned
     private ScreenViewport viewport;
     private View view;
-    private Texture texture;
+    private Skin skin;
 
     @Override
     public void create() {
@@ -28,11 +28,12 @@ public class MiniWarGame extends ApplicationAdapter {
         view.add(battleLayer);
 
         // Populate Battle Layer (for testing purposes)
-        texture = new Texture(Gdx.files.internal("spearman.png"));
-        battleLayer.add(new Element(texture));
-        battleLayer.add(new Element(texture, 300, 20));
-        battleLayer.add(new Element(texture, 50, 100));
-        battleLayer.add(new Element(texture, 10, 10));
+        Texture texture = new Texture(Gdx.files.internal("spearman.png"));
+        skin = new Skin(texture, 38, 16);
+        battleLayer.add(new Element(skin, 30, 30));
+        battleLayer.add(new Element(skin, 300, 20));
+        battleLayer.add(new Element(skin, 50, 100));
+        battleLayer.add(new Element(skin, 40, 40));
 
         // Set up the an input event listener
         Gdx.input.setInputProcessor(new InputHandler(cam, battleLayer));
@@ -52,7 +53,7 @@ public class MiniWarGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         view.dispose();
-        texture.dispose();
+        skin.dispose();
     }
 
     private static class InputHandler extends InputAdapter {

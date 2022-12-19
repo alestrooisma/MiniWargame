@@ -1,6 +1,5 @@
 package mwg;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -8,14 +7,14 @@ public class Element implements Comparable<Element>, Disposable {
     // Owned
     private final Vector2 position = new Vector2();
     // Not owned
-    private final Texture texture;
+    private final Skin skin;
 
-    public Element(Texture texture) {
-        this.texture = texture;
+    public Element(Skin skin) {
+        this.skin = skin;
     }
 
-    public Element(Texture texture, float x, float y) {
-        this.texture = texture;
+    public Element(Skin skin, float x, float y) {
+        this(skin);
         this.position.x = x;
         this.position.y = y;
     }
@@ -24,8 +23,8 @@ public class Element implements Comparable<Element>, Disposable {
         return position;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public Skin getSkin() {
+        return skin;
     }
 
     public void dispose() {
