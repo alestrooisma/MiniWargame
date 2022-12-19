@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class BattleLayer implements Layer {
@@ -13,11 +14,15 @@ public class BattleLayer implements Layer {
     private final SpriteBatch batch = new SpriteBatch();
     private final Array<Element> elements = new Array<>();
     private final TweenEngine engine = new TweenEngine();
+    private final Skin hoverTop = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-top.png")), 36, 18);
+    private final Skin hoverBottom = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-bottom.png")), 36, 18);
     private final Skin selectionTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 18);
     private final Skin selectionBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 18);
     // Not owned
     private final Camera cam;
     private Element selected = null;
+    // Utilities
+    private final Vector3 vec = new Vector3();
 
     public BattleLayer(Camera cam) {
         this.cam = cam;
@@ -38,6 +43,11 @@ public class BattleLayer implements Layer {
 
     @Override
     public void render() {
+        // Get element beneath mouse cursor
+        cam.unproject(vec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Element hovered = getElementAt(vec.x, vec.y);
+
+        // Render all elements + hover & selection decoration
         elements.sort();
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
@@ -46,6 +56,10 @@ public class BattleLayer implements Layer {
                 selectionTop.draw(batch, e.getPosition());
                 e.getSkin().draw(batch, e.getPosition());
                 selectionBottom.draw(batch, e.getPosition());
+            } else if (e == hovered) {
+                hoverTop.draw(batch, e.getPosition());
+                e.getSkin().draw(batch, e.getPosition());
+                hoverBottom.draw(batch, e.getPosition());
             } else {
                 e.getSkin().draw(batch, e.getPosition());
             }
