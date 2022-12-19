@@ -1,8 +1,10 @@
 package mwg;
 
 import aetherdriven.view.Layer;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
@@ -11,6 +13,8 @@ public class BattleLayer implements Layer {
     private final SpriteBatch batch = new SpriteBatch();
     private final Array<Element> elements = new Array<>();
     private final TweenEngine engine = new TweenEngine();
+    private final Skin selectionTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 18);
+    private final Skin selectionBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 18);
     // Not owned
     private final Camera cam;
     private Element selected = null;
@@ -38,7 +42,13 @@ public class BattleLayer implements Layer {
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
         for (Element e : elements) {
-            e.getSkin().draw(batch, e.getPosition());
+            if (e == selected) {
+                selectionTop.draw(batch, e.getPosition());
+                e.getSkin().draw(batch, e.getPosition());
+                selectionBottom.draw(batch, e.getPosition());
+            } else {
+                e.getSkin().draw(batch, e.getPosition());
+            }
         }
         batch.end();
     }
@@ -53,7 +63,7 @@ public class BattleLayer implements Layer {
 
     public void touch(int button, float x, float y) {
         if (button == Buttons.LEFT) {
-            selected = getElementAt(x, y);;
+            selected = getElementAt(x, y);
         } else if (selected != null && button == Buttons.RIGHT) {
             engine.add(selected.getPosition(), x, y, 300);
         }

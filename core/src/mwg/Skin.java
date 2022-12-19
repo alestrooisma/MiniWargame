@@ -12,6 +12,10 @@ public class Skin implements Disposable {
     private final Vector2 origin;
     private final Shape2D bounds;
 
+    public Skin(Texture texture, float originX, float originY) {
+        this(texture, originX, originY, null);
+    }
+
     public Skin(Texture texture, float originX, float originY, Shape2D bounds) {
         this.texture = texture;
         this.origin = new Vector2(originX, originY);
@@ -27,7 +31,7 @@ public class Skin implements Disposable {
     }
 
     public boolean contains(float x, float y) {
-        return bounds.contains(x, y);
+        return bounds != null && bounds.contains(x, y);
     }
 
     @Override
