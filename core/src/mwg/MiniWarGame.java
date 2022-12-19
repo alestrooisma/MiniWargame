@@ -30,7 +30,7 @@ public class MiniWarGame extends ApplicationAdapter {
 
         // Populate Battle Layer (for testing purposes)
         Texture texture = new Texture(Gdx.files.internal("spearman.png"));
-        skin = new Skin(texture, 38, 16, new Rectangle(-17, -2, 30, 42));
+        skin = new Skin(texture, 37, 18, new Rectangle(-16, -4, 30, 42));
         battleLayer.add(new Element(skin, 30, 30));
         battleLayer.add(new Element(skin, 300, 20));
         battleLayer.add(new Element(skin, 50, 100));
