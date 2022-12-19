@@ -27,6 +27,10 @@ public class Element implements Comparable<Element>, Disposable {
         return skin;
     }
 
+    public boolean contains(float x, float y) {
+        return skin.contains(x - position.x, y - position.y);
+    }
+
     public void dispose() {
     }
 

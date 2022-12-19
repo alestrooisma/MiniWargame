@@ -2,6 +2,7 @@ package mwg;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -9,10 +10,12 @@ public class Skin implements Disposable {
     // Owned
     private final Texture texture;
     private final Vector2 origin;
+    private final Shape2D bounds;
 
-    public Skin(Texture texture, float originX, float originY) {
+    public Skin(Texture texture, float originX, float originY, Shape2D bounds) {
         this.texture = texture;
         this.origin = new Vector2(originX, originY);
+        this.bounds = bounds;
     }
 
     public void draw(SpriteBatch batch, float x, float y) {
@@ -21,6 +24,10 @@ public class Skin implements Disposable {
 
     public void draw(SpriteBatch batch, Vector2 position) {
         draw(batch, position.x, position.y);
+    }
+
+    public boolean contains(float x, float y) {
+        return bounds.contains(x, y);
     }
 
     @Override

@@ -52,11 +52,8 @@ public class BattleLayer implements Layer {
     }
 
     public void touch(int button, float x, float y) {
-        Element e = getElementAt(x, y);
-
-        // Notify the controller of a touched element (which may be null)
         if (button == Buttons.LEFT) {
-            selected = e;
+            selected = getElementAt(x, y);;
         } else if (selected != null && button == Buttons.RIGHT) {
             engine.add(selected.getPosition(), x, y, 300);
         }
@@ -69,8 +66,7 @@ public class BattleLayer implements Layer {
         // for which the coordinates are in its "hit box".
         for (int i = elements.size - 1; touchedElement == null && i >= 0; i--) {
             Element e = elements.get(i);
-            if (x > e.getPosition().x && x < e.getPosition().x + 72 //TODO fix!
-                    && y > e.getPosition().y && y < e.getPosition().y + 72) {
+            if (e.contains(x, y)) {
                 touchedElement = e;
             }
         }

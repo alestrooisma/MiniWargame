@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -29,7 +30,7 @@ public class MiniWarGame extends ApplicationAdapter {
 
         // Populate Battle Layer (for testing purposes)
         Texture texture = new Texture(Gdx.files.internal("spearman.png"));
-        skin = new Skin(texture, 38, 16);
+        skin = new Skin(texture, 38, 16, new Rectangle(-17, -2, 30, 42));
         battleLayer.add(new Element(skin, 30, 30));
         battleLayer.add(new Element(skin, 300, 20));
         battleLayer.add(new Element(skin, 50, 100));
