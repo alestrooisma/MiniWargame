@@ -1,6 +1,5 @@
 package mwg;
 
-import aetherdriven.view.View;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -9,17 +8,16 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import mwg.model.Army;
 import mwg.model.Battle;
 import mwg.model.Unit;
 import mwg.view.BattleLayer;
 import mwg.view.Element;
 import mwg.view.Skin;
+import mwg.view.View;
 
 public class MiniWarGame extends ApplicationAdapter {
     // Owned
-    private ScreenViewport viewport;
     private View view;
     private Skin skin;
 
@@ -40,16 +38,11 @@ public class MiniWarGame extends ApplicationAdapter {
         battle.add(player);
         battle.add(opponent);
 
-        // Create a viewport
-        viewport = new ScreenViewport();
-        Camera cam = viewport.getCamera();
-
         // Create the view
-        view = new View(0.2f, 0.2f, 0.2f);
-        BattleLayer battleLayer = new BattleLayer(cam);
-        view.add(battleLayer);
+        view = new View();
 
-        // Populate Battle Layer (for testing purposes)
+        // Populate Battle Layer
+        BattleLayer battleLayer = view.getBattleLayer();
         Texture texture = new Texture(Gdx.files.internal("spearman.png"));
         skin = new Skin(texture, 37, 18, new Rectangle(-16, -4, 30, 42));
         for (Army army : battle.getArmies()) {
@@ -59,13 +52,12 @@ public class MiniWarGame extends ApplicationAdapter {
         }
         battleLayer.setPlayerArmy(player);
 
-        // Set up the an input event listener
-        Gdx.input.setInputProcessor(new InputHandler(cam, battleLayer));
+        // Set up an input event listener
+        Gdx.input.setInputProcessor(new InputHandler(view.getCamera(), battleLayer));
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
         view.resize(width, height);
     }
 

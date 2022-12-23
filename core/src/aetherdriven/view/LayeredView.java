@@ -6,16 +6,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.Disposable;
 import java.util.LinkedList;
 
-public class View implements Disposable {
+public class LayeredView implements Disposable {
     // Owned
     private final Color clearColor;
     private final LinkedList<Layer> layers = new LinkedList<>();
 
-    public View() {
+    public LayeredView() {
         this(0, 0, 0);
     }
 
-    public View(float r, float g, float b) {
+    public LayeredView(float r, float g, float b) {
         clearColor = new Color(r, g, b, 1);
     }
 
