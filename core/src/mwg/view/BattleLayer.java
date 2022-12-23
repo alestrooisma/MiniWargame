@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import mwg.model.Army;
 
 public class BattleLayer implements Layer {
     // Owned
@@ -20,6 +21,7 @@ public class BattleLayer implements Layer {
     private final Skin selectionBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 18);
     // Not owned
     private final Camera cam;
+    private Army player = null;
     private Element selected = null;
     // Utilities
     private final Vector3 vec = new Vector3();
@@ -56,7 +58,7 @@ public class BattleLayer implements Layer {
                 selectionTop.draw(batch, e.getPosition());
                 e.getSkin().draw(batch, e.getPosition());
                 selectionBottom.draw(batch, e.getPosition());
-            } else if (e == hovered) {
+            } else if (e == hovered && e.getUnit().getArmy() == player) {
                 hoverTop.draw(batch, e.getPosition());
                 e.getSkin().draw(batch, e.getPosition());
                 hoverBottom.draw(batch, e.getPosition());
@@ -76,8 +78,9 @@ public class BattleLayer implements Layer {
     }
 
     public void touch(int button, float x, float y) {
-        if (button == Buttons.LEFT) {
-            selected = getElementAt(x, y);
+        Element touched = getElementAt(x, y);
+        if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
+            selected = touched;
         } else if (selected != null && button == Buttons.RIGHT) {
             engine.add(selected.getPosition(), x, y, 300);
         }
@@ -97,5 +100,9 @@ public class BattleLayer implements Layer {
 
         // Return the topmost element at (x, y), which may be null
         return touchedElement;
+    }
+
+    public void setPlayerArmy(Army player) {
+        this.player = player;
     }
 }

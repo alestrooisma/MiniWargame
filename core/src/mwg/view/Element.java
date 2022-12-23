@@ -2,25 +2,27 @@ package mwg.view;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import mwg.model.Unit;
 
 public class Element implements Comparable<Element>, Disposable {
     // Owned
     private final Vector2 position = new Vector2();
     // Not owned
+    private final Unit unit;
     private final Skin skin;
 
-    public Element(Skin skin) {
+    public Element(Unit unit, Skin skin) {
+        this.unit = unit;
         this.skin = skin;
-    }
-
-    public Element(Skin skin, float x, float y) {
-        this(skin);
-        this.position.x = x;
-        this.position.y = y;
+        position.set(unit.getPosition());
     }
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public Unit getUnit() {
+        return unit;
     }
 
     public Skin getSkin() {

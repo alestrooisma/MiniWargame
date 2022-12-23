@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import mwg.model.Army;
+import mwg.model.Battle;
+import mwg.model.Unit;
 import mwg.view.BattleLayer;
 import mwg.view.Element;
 import mwg.view.Skin;
@@ -22,6 +25,21 @@ public class MiniWarGame extends ApplicationAdapter {
 
     @Override
     public void create() {
+        // Create model
+        Army player = new Army(3);
+        player.add(new Unit(player, 30, 30));
+        player.add(new Unit(player, 40, 80));
+        player.add(new Unit(player, 70, 20));
+
+        Army opponent = new Army(3);
+        opponent.add(new Unit(opponent, 610, 405));
+        opponent.add(new Unit(opponent, 545, 410));
+        opponent.add(new Unit(opponent, 600, 360));
+
+        Battle battle = new Battle();
+        battle.add(player);
+        battle.add(opponent);
+
         // Create a viewport
         viewport = new ScreenViewport();
         Camera cam = viewport.getCamera();
@@ -34,10 +52,12 @@ public class MiniWarGame extends ApplicationAdapter {
         // Populate Battle Layer (for testing purposes)
         Texture texture = new Texture(Gdx.files.internal("spearman.png"));
         skin = new Skin(texture, 37, 18, new Rectangle(-16, -4, 30, 42));
-        battleLayer.add(new Element(skin, 30, 30));
-        battleLayer.add(new Element(skin, 300, 20));
-        battleLayer.add(new Element(skin, 50, 100));
-        battleLayer.add(new Element(skin, 40, 40));
+        for (Army army : battle.getArmies()) {
+            for (Unit unit : army.getUnits()) {
+                battleLayer.add(new Element(unit, skin));
+            }
+        }
+        battleLayer.setPlayerArmy(player);
 
         // Set up the an input event listener
         Gdx.input.setInputProcessor(new InputHandler(cam, battleLayer));
