@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import mwg.view.BattleLayer;
+import mwg.view.Element;
+import mwg.view.Skin;
 
 public class MiniWarGame extends ApplicationAdapter {
     // Owned

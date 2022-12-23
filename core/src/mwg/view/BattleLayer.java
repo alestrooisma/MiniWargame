@@ -1,4 +1,4 @@
-package mwg;
+package mwg.view;
 
 import aetherdriven.view.Layer;
 import com.badlogic.gdx.Gdx;
