@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
 public class Skin implements Disposable {
@@ -27,6 +28,10 @@ public class Skin implements Disposable {
     }
 
     public void draw(SpriteBatch batch, Vector2 position) {
+        draw(batch, position.x, position.y);
+    }
+
+    public void draw(SpriteBatch batch, Vector3 position) {
         draw(batch, position.x, position.y);
     }
 

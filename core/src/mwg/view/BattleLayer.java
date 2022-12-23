@@ -24,7 +24,7 @@ public class BattleLayer implements Layer {
     private Army player = null;
     private Element selected = null;
     // Utilities
-    private final Vector3 vec = new Vector3();
+    private final Vector3 mousePosition = new Vector3();
 
     public BattleLayer(Camera cam) {
         this.cam = cam;
@@ -46,13 +46,15 @@ public class BattleLayer implements Layer {
     @Override
     public void render() {
         // Get element beneath mouse cursor
-        cam.unproject(vec.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-        Element hovered = getElementAt(vec.x, vec.y);
+        cam.unproject(mousePosition.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Element hovered = getElementAt(mousePosition);
+
+        // Prepare drawing
+        batch.setProjectionMatrix(cam.combined);
+        batch.begin();
 
         // Render all elements + hover & selection decoration
         elements.sort();
-        batch.setProjectionMatrix(cam.combined);
-        batch.begin();
         for (Element e : elements) {
             if (e == selected) {
                 selectionTop.draw(batch, e.getPosition());
@@ -66,6 +68,15 @@ public class BattleLayer implements Layer {
                 e.getSkin().draw(batch, e.getPosition());
             }
         }
+
+        // Render indicator for movement target position
+        if (selected != null) {
+            batch.setColor(1, 1, 1, 0.5f);
+            selectionTop.draw(batch, mousePosition);
+            selectionBottom.draw(batch, mousePosition);
+            batch.setColor(1, 1, 1, 1);
+        }
+
         batch.end();
     }
 
@@ -84,6 +95,10 @@ public class BattleLayer implements Layer {
         } else if (selected != null && button == Buttons.RIGHT) {
             engine.add(selected.getPosition(), x, y, 300);
         }
+    }
+
+    private Element getElementAt(Vector3 position) {
+        return getElementAt(position.x, position.y);
     }
 
     private Element getElementAt(float x, float y) {
