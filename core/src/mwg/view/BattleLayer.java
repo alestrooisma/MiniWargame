@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.model.Army;
@@ -32,6 +33,10 @@ public class BattleLayer implements Layer {
 
     public void add(Element e) {
         elements.add(e);
+    }
+
+    public void setPlayerArmy(Army player) {
+        this.player = player;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class BattleLayer implements Layer {
         }
 
         // Render indicator for movement target position
-        if (selected != null) {
+        if (selected != null && canBeMovedTo(mousePosition)) {
             batch.setColor(1, 1, 1, 0.5f);
             selectionTop.draw(batch, mousePosition);
             selectionBottom.draw(batch, mousePosition);
@@ -92,7 +97,7 @@ public class BattleLayer implements Layer {
         Element touched = getElementAt(x, y);
         if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
             selected = touched;
-        } else if (selected != null && button == Buttons.RIGHT) {
+        } else if (selected != null && button == Buttons.RIGHT && canBeMovedTo(x, y)) {
             selected.getUnit().setPosition(x, y);
             engine.add(selected.getPosition(), selected.getUnit().getPosition(), 300);
         }
@@ -118,7 +123,21 @@ public class BattleLayer implements Layer {
         return touchedElement;
     }
 
-    public void setPlayerArmy(Army player) {
-        this.player = player;
+    private boolean canBeMovedTo(Vector3 position) {
+        return canBeMovedTo(position.x, position.y);
+    }
+
+    private boolean canBeMovedTo(float x, float y) {
+        for (Element e : elements) {
+            if (e != selected) {
+                float dx = e.getUnit().getPosition().x - x;
+                float dy = 2 * (e.getUnit().getPosition().y - y); // multiplied by two to correct for isometric perspective
+                float minimum = e.getUnit().getRadius() + selected.getUnit().getRadius();
+                if (dx*dx + dy*dy < minimum * minimum) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
