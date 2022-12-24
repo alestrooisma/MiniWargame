@@ -93,7 +93,8 @@ public class BattleLayer implements Layer {
         if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
             selected = touched;
         } else if (selected != null && button == Buttons.RIGHT) {
-            engine.add(selected.getPosition(), x, y, 300);
+            selected.getUnit().setPosition(x, y);
+            engine.add(selected.getPosition(), selected.getUnit().getPosition(), 300);
         }
     }
 

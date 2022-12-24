@@ -10,6 +10,10 @@ public class TweenEngine {
         actions.add(new TweenAction(target, x, y, speed));
     }
 
+    public void add(Vector2 target, Vector2 destination, float speed) {
+        add(target, destination.x, destination.y, speed);
+    }
+
     public void update(float dt) {
         for (TweenAction action : actions) {
             boolean done = action.update(dt);
