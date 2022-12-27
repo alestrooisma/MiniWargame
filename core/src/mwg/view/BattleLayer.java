@@ -4,6 +4,7 @@ import aetherdriven.view.Layer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -61,13 +62,9 @@ public class BattleLayer implements Layer {
         elements.sort();
         for (Element e : elements) {
             if (e == selected) {
-                selectionTop.draw(batch, e.getPosition());
-                e.getSkin().draw(batch, e.getPosition());
-                selectionBottom.draw(batch, e.getPosition());
-            } else if (e == hovered && e.getUnit().getArmy() == player) {
-                hoverTop.draw(batch, e.getPosition());
-                e.getSkin().draw(batch, e.getPosition());
-                hoverBottom.draw(batch, e.getPosition());
+                renderElement(e, selectionTop, selectionBottom);
+            } else if (e == hovered) {
+                renderElement(e, hoverTop, hoverBottom);
             } else {
                 e.getSkin().draw(batch, e.getPosition());
             }
@@ -82,6 +79,17 @@ public class BattleLayer implements Layer {
         }
 
         batch.end();
+    }
+
+    public void renderElement(Element e, Skin top, Skin bottom) {
+        Color color = e.getUnit().getArmy() == player ? Color.BLUE : Color.RED;
+        batch.setColor(color);
+        top.draw(batch, e.getPosition());
+        batch.setColor(Color.WHITE);
+        e.getSkin().draw(batch, e.getPosition());
+        batch.setColor(color);
+        bottom.draw(batch, e.getPosition());
+        batch.setColor(Color.WHITE);
     }
 
     @Override
