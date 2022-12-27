@@ -114,7 +114,7 @@ public class BattleLayer implements Layer {
         // for which the coordinates are in its "hit box".
         for (int i = elements.size - 1; touchedElement == null && i >= 0; i--) {
             Element e = elements.get(i);
-            if (e.contains(x, y)) {
+            if (e.contains(x, y) || e.getUnit().occupies(x, y)) {
                 touchedElement = e;
             }
         }
