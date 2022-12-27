@@ -58,15 +58,17 @@ public class BattleLayer implements Layer {
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
 
-        // Render all elements + hover & selection decoration
+        // Render all elements (with decoration)
         elements.sort();
         for (Element e : elements) {
             if (e == selected) {
                 renderElement(e, selectionTop, selectionBottom);
-            } else if (e == hovered) {
-                renderElement(e, hoverTop, hoverBottom);
+            } else if (e == hovered && e.getUnit().getArmy() == player) {
+                renderElement(e, selectionTop, selectionBottom, 0.75f);
+            } else if (e == hovered) { // Opponent army
+                renderElement(e, hoverTop, hoverBottom, 0.75f);
             } else {
-                e.getSkin().draw(batch, e.getPosition());
+                renderElement(e, selectionTop, selectionBottom, 0.5f);
             }
         }
 
@@ -82,13 +84,25 @@ public class BattleLayer implements Layer {
     }
 
     public void renderElement(Element e, Skin top, Skin bottom) {
-        Color color = e.getUnit().getArmy() == player ? Color.BLUE : Color.RED;
-        batch.setColor(color);
+        renderElement(e, top, bottom, 1);
+    }
+
+    public void renderElement(Element e, Skin top, Skin bottom, float alpha) {
+        Color c = e.getUnit().getArmy() == player ? Color.BLUE : Color.RED;
+
+        // Draw top of selection ring
+        batch.setColor(c.r, c.g, c.b, alpha);
         top.draw(batch, e.getPosition());
+
+        // Draw element itself
         batch.setColor(Color.WHITE);
         e.getSkin().draw(batch, e.getPosition());
-        batch.setColor(color);
+
+        // Draw bottom of selection ring
+        batch.setColor(c.r, c.g, c.b, alpha);
         bottom.draw(batch, e.getPosition());
+
+        // Reset color
         batch.setColor(Color.WHITE);
     }
 
