@@ -154,13 +154,8 @@ public class BattleLayer implements Layer {
 
     private boolean canBeMovedTo(float x, float y) {
         for (Element e : elements) {
-            if (e != selected) {
-                float dx = e.getUnit().getPosition().x - x;
-                float dy = 2 * (e.getUnit().getPosition().y - y); // multiplied by two to correct for isometric perspective
-                float minimum = e.getUnit().getRadius() + selected.getUnit().getRadius();
-                if (dx*dx + dy*dy < minimum * minimum) {
-                    return false;
-                }
+            if (e != selected && e.getUnit().overlaps(x, y, selected.getUnit().getRadius())) {
+                return false;
             }
         }
         return true;

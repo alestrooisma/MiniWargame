@@ -43,4 +43,11 @@ public class Unit {
         float dy = (y - position.y) * 2; // multiplied by two to correct for isometric perspective
         return dx * dx + dy * dy <= radius * radius;
     }
+
+    public boolean overlaps(float x, float y, float r) {
+        float dx = x - position.x;
+        float dy = (y - position.y) * 2; // multiplied by two to correct for isometric perspective
+        float minimum = radius + r;
+        return dx*dx + dy*dy < minimum * minimum;
+    }
 }
