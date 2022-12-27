@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.model.Army;
@@ -94,10 +93,14 @@ public class BattleLayer implements Layer {
     }
 
     public void touch(int button, float x, float y) {
+        if (engine.isBusy()) {
+            return;
+        }
+
         Element touched = getElementAt(x, y);
         if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
             selected = touched;
-        } else if (selected != null && button == Buttons.RIGHT && canBeMovedTo(x, y)) {
+        } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT && canBeMovedTo(x, y)) {
             selected.getUnit().setPosition(x, y);
             engine.add(selected.getPosition(), selected.getUnit().getPosition(), 300);
         }

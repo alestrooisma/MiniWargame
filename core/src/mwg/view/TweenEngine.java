@@ -23,6 +23,14 @@ public class TweenEngine {
         }
     }
 
+    public boolean isIdle() {
+        return actions.isEmpty();
+    }
+
+    public boolean isBusy() {
+        return actions.notEmpty();
+    }
+
     public static class TweenAction {
         // Owned
         private final Vector2 destination = new Vector2();
