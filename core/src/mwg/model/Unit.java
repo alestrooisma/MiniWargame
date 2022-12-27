@@ -40,7 +40,7 @@ public class Unit {
 
     public boolean occupies(float x, float y) {
         float dx = x - position.x;
-        float dy = y - position.y;
-        return dx * dx + dy * dy < radius * radius;
+        float dy = (y - position.y) * 2; // multiplied by two to correct for isometric perspective
+        return dx * dx + dy * dy <= radius * radius;
     }
 }
