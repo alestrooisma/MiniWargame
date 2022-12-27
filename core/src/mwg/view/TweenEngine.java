@@ -15,7 +15,8 @@ public class TweenEngine {
     }
 
     public void update(float dt) {
-        for (TweenAction action : actions) {
+        if (actions.notEmpty()) {
+            TweenAction action = actions.first();
             boolean done = action.update(dt);
             if (done) {
                 actions.removeValue(action, true);
@@ -33,18 +34,25 @@ public class TweenEngine {
 
     public static class TweenAction {
         // Owned
+        private final float speed;
         private final Vector3 destination = new Vector3();
         private final Vector3 velocity = new Vector3();
+        private boolean started = false;
         // Not owned
         private final Vector3 target;
 
         public TweenAction(Vector3 target, float x, float y, float speed) {
             this.target = target;
             this.destination.set(x, y, 0);
-            this.velocity.set(x, y, 0).sub(target).nor().scl(speed);
+            this.speed = speed;
         }
 
         public boolean update(float dt) {
+            if (!started) {
+                velocity.set(destination).sub(target).nor().scl(speed);
+                started = true;
+            }
+
             if (Math.abs(velocity.x * dt) < Math.abs(destination.x - target.x)) {
                 target.add(velocity.x * dt, velocity.y * dt, 0);
                 return false;
