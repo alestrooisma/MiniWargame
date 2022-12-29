@@ -82,8 +82,13 @@ public class BattleLayer implements Layer {
         if (selected != null) {
             determineMovementDestination(mousePixelPosition);
             batch.setColor(1, 1, 1, 0.5f);
-            selectionTop.draw(batch, movementPixelDestination);
-            selectionBottom.draw(batch, movementPixelDestination);
+            if (canBeMovedTo(movementWorldDestination)) {
+                selectionTop.draw(batch, movementPixelDestination);
+                selectionBottom.draw(batch, movementPixelDestination);
+            } else {
+                hoverTop.draw(batch, movementPixelDestination);
+                hoverBottom.draw(batch, movementPixelDestination);
+            }
             batch.setColor(1, 1, 1, 1);
         }
 
@@ -131,8 +136,10 @@ public class BattleLayer implements Layer {
             selected = touched;
         } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT) {
             determineMovementDestination(x, y);
-            selected.getUnit().setPosition(movementWorldDestination.x, movementWorldDestination.y);
-            engine.add(selected.getPosition(), movementPixelDestination, 300);
+            if (canBeMovedTo(movementWorldDestination)) {
+                selected.getUnit().setPosition(movementWorldDestination.x, movementWorldDestination.y);
+                engine.add(selected.getPosition(), movementPixelDestination, 300);
+            }
         }
     }
 
@@ -155,6 +162,19 @@ public class BattleLayer implements Layer {
 
         // Return the topmost element at (x, y), which may be null
         return touchedElement;
+    }
+
+    private boolean canBeMovedTo(Vector2 position) {
+        return canBeMovedTo(position.x, position.y);
+    }
+
+    private boolean canBeMovedTo(float x, float y) {
+        for (Element e : elements) {
+            if (e != selected && e.getUnit().overlaps(x, y, selected.getUnit().getRadius())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void determineMovementDestination(Vector3 position) {

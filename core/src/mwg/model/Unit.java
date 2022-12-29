@@ -48,6 +48,6 @@ public class Unit {
         float dx = x - position.x;
         float dy = y - position.y;
         float minimum = radius + r;
-        return dx*dx + dy*dy < minimum * minimum;
+        return dx*dx + dy*dy < minimum * minimum * (1 - 1e-5f); // Accomodate for floating point errors
     }
 }

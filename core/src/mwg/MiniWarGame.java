@@ -32,7 +32,7 @@ public class MiniWarGame extends ApplicationAdapter {
         Army opponent = new Army(3);
         opponent.add(new Unit(opponent, 610, 810));
         opponent.add(new Unit(opponent, 545, 820));
-        opponent.add(new Unit(opponent, 600, 720));
+        opponent.add(new Unit(opponent, 590, 740));
 
         Battle battle = new Battle();
         battle.add(player);
