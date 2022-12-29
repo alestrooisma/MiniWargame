@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.model.Army;
@@ -26,6 +27,7 @@ public class BattleLayer implements Layer {
     private Element selected = null;
     // Utilities
     private final Vector3 mousePosition = new Vector3();
+    private final Vector2 movementDestination = new Vector2();
 
     public BattleLayer(Camera cam) {
         this.cam = cam;
@@ -73,10 +75,11 @@ public class BattleLayer implements Layer {
         }
 
         // Render indicator for movement target position
-        if (selected != null && canBeMovedTo(mousePosition)) {
+        if (selected != null) {
+            determineMovementDestination(mousePosition);
             batch.setColor(1, 1, 1, 0.5f);
-            selectionTop.draw(batch, mousePosition);
-            selectionBottom.draw(batch, mousePosition);
+            selectionTop.draw(batch, movementDestination);
+            selectionBottom.draw(batch, movementDestination);
             batch.setColor(1, 1, 1, 1);
         }
 
@@ -122,8 +125,9 @@ public class BattleLayer implements Layer {
         Element touched = getElementAt(x, y);
         if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
             selected = touched;
-        } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT && canBeMovedTo(x, y)) {
-            selected.getUnit().setPosition(x, y);
+        } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT) {
+            determineMovementDestination(x, y);
+            selected.getUnit().setPosition(movementDestination.x, movementDestination.y);
             engine.add(selected.getPosition(), selected.getUnit().getPosition(), 300);
         }
     }
@@ -148,16 +152,34 @@ public class BattleLayer implements Layer {
         return touchedElement;
     }
 
-    private boolean canBeMovedTo(Vector3 position) {
-        return canBeMovedTo(position.x, position.y);
+    private void determineMovementDestination(Vector3 position) {
+        determineMovementDestination(position.x, position.y);
     }
 
-    private boolean canBeMovedTo(float x, float y) {
+    private void determineMovementDestination(float x, float y) {
+        Element e = getNearestElement(x, y);
+        if (e.getUnit().overlaps(x, y, selected.getUnit().getRadius())) {
+            movementDestination.set(e.getUnit().getPosition()).sub(selected.getUnit().getPosition());
+            movementDestination.y *= 2; // multiplied by two to correct for isometric perspective
+            float dist = movementDestination.len() - e.getUnit().getRadius() - selected.getUnit().getRadius();
+            movementDestination.nor().scl(dist);
+            movementDestination.y /= 2; // and transform back
+            movementDestination.add(selected.getUnit().getPosition());
+        } else {
+            movementDestination.set(x, y);
+        }
+    }
+
+    private Element getNearestElement(float x, float y) {
+        Element nearest = null;
+        float minimumDistance = Float.MAX_VALUE;
         for (Element e : elements) {
-            if (e != selected && e.getUnit().overlaps(x, y, selected.getUnit().getRadius())) {
-                return false;
+            float distance = e.getUnit().getPosition().dst(x, y);
+            if (e != selected && distance < minimumDistance) {
+                minimumDistance = distance;
+                nearest = e;
             }
         }
-        return true;
+        return nearest;
     }
 }
