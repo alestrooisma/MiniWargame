@@ -1,16 +1,16 @@
 package mwg.view;
 
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class TweenEngine {
     private final Array<TweenAction> actions = new Array<>();
 
-    public void add(Vector2 target, float x, float y, float speed) {
+    public void add(Vector3 target, float x, float y, float speed) {
         actions.add(new TweenAction(target, x, y, speed));
     }
 
-    public void add(Vector2 target, Vector2 destination, float speed) {
+    public void add(Vector3 target, Vector3 destination, float speed) {
         add(target, destination.x, destination.y, speed);
     }
 
@@ -33,20 +33,20 @@ public class TweenEngine {
 
     public static class TweenAction {
         // Owned
-        private final Vector2 destination = new Vector2();
-        private final Vector2 velocity = new Vector2();
+        private final Vector3 destination = new Vector3();
+        private final Vector3 velocity = new Vector3();
         // Not owned
-        private final Vector2 target;
+        private final Vector3 target;
 
-        public TweenAction(Vector2 target, float x, float y, float speed) {
+        public TweenAction(Vector3 target, float x, float y, float speed) {
             this.target = target;
-            this.destination.set(x, y);
-            this.velocity.set(x, y).sub(target).nor().scl(speed);
+            this.destination.set(x, y, 0);
+            this.velocity.set(x, y, 0).sub(target).nor().scl(speed);
         }
 
         public boolean update(float dt) {
             if (Math.abs(velocity.x * dt) < Math.abs(destination.x - target.x)) {
-                target.add(velocity.x * dt, velocity.y * dt);
+                target.add(velocity.x * dt, velocity.y * dt, 0);
                 return false;
             } else {
                 target.set(destination);

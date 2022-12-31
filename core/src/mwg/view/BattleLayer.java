@@ -26,8 +26,10 @@ public class BattleLayer implements Layer {
     private Army player = null;
     private Element selected = null;
     // Utilities
-    private final Vector3 mousePosition = new Vector3();
-    private final Vector2 movementDestination = new Vector2();
+    private final Vector3 mousePixelPosition = new Vector3();
+    private final Vector3 movementPixelDestination = new Vector3();
+    private final Vector2 movementWorldDestination = new Vector2();
+    private final Vector2 vec = new Vector2();
 
     public BattleLayer(Camera cam) {
         this.cam = cam;
@@ -35,6 +37,8 @@ public class BattleLayer implements Layer {
 
     public void add(Element e) {
         elements.add(e);
+        // Set the element position to the pixel coordinates matching the unit's world coordinates
+        worldToPixelCoordinates(e.getUnit().getPosition(), e.getPosition());
     }
 
     public void setPlayerArmy(Army player) {
@@ -53,8 +57,8 @@ public class BattleLayer implements Layer {
     @Override
     public void render() {
         // Get element beneath mouse cursor
-        cam.unproject(mousePosition.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-        Element hovered = getElementAt(mousePosition);
+        cam.unproject(mousePixelPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Element hovered = getElementAt(mousePixelPosition);
 
         // Prepare drawing
         batch.setProjectionMatrix(cam.combined);
@@ -76,10 +80,10 @@ public class BattleLayer implements Layer {
 
         // Render indicator for movement target position
         if (selected != null) {
-            determineMovementDestination(mousePosition);
+            determineMovementDestination(mousePixelPosition);
             batch.setColor(1, 1, 1, 0.5f);
-            selectionTop.draw(batch, movementDestination);
-            selectionBottom.draw(batch, movementDestination);
+            selectionTop.draw(batch, movementPixelDestination);
+            selectionBottom.draw(batch, movementPixelDestination);
             batch.setColor(1, 1, 1, 1);
         }
 
@@ -127,8 +131,8 @@ public class BattleLayer implements Layer {
             selected = touched;
         } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT) {
             determineMovementDestination(x, y);
-            selected.getUnit().setPosition(movementDestination.x, movementDestination.y);
-            engine.add(selected.getPosition(), selected.getUnit().getPosition(), 300);
+            selected.getUnit().setPosition(movementWorldDestination.x, movementWorldDestination.y);
+            engine.add(selected.getPosition(), movementPixelDestination, 300);
         }
     }
 
@@ -157,17 +161,17 @@ public class BattleLayer implements Layer {
     }
 
     private void determineMovementDestination(float x, float y) {
-        Element e = getNearestElement(x, y);
-        if (e.getUnit().overlaps(x, y, selected.getUnit().getRadius())) {
-            movementDestination.set(e.getUnit().getPosition()).sub(selected.getUnit().getPosition());
-            movementDestination.y *= 2; // multiplied by two to correct for isometric perspective
-            float dist = movementDestination.len() - e.getUnit().getRadius() - selected.getUnit().getRadius();
-            movementDestination.nor().scl(dist);
-            movementDestination.y /= 2; // and transform back
-            movementDestination.add(selected.getUnit().getPosition());
+        pixelToWorldCoordinates(x, y, vec);
+        Element e = getNearestElement(vec.x, vec.y);
+        if (e.getUnit().overlaps(vec.x, vec.y, selected.getUnit().getRadius())) {
+            movementWorldDestination.set(e.getUnit().getPosition()).sub(selected.getUnit().getPosition());
+            float dist = movementWorldDestination.len() - e.getUnit().getRadius() - selected.getUnit().getRadius();
+            movementWorldDestination.nor().scl(dist).add(selected.getUnit().getPosition());
         } else {
-            movementDestination.set(x, y);
+            movementWorldDestination.set(vec.x, vec.y);
         }
+
+        worldToPixelCoordinates(movementWorldDestination, movementPixelDestination);
     }
 
     private Element getNearestElement(float x, float y) {
@@ -181,5 +185,18 @@ public class BattleLayer implements Layer {
             }
         }
         return nearest;
+    }
+
+    private Vector3 worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
+        pixel.x = world.x;
+        pixel.y = world.y / 2;
+        pixel.z = 0;
+        return pixel;
+    }
+
+    private Vector2 pixelToWorldCoordinates(float x, float y, Vector2 world) {
+        world.x = x;
+        world.y = y * 2;
+        return world;
     }
 }

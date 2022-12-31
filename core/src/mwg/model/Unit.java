@@ -40,13 +40,13 @@ public class Unit {
 
     public boolean occupies(float x, float y) {
         float dx = x - position.x;
-        float dy = (y - position.y) * 2; // multiplied by two to correct for isometric perspective
+        float dy = y - position.y;
         return dx * dx + dy * dy <= radius * radius;
     }
 
     public boolean overlaps(float x, float y, float r) {
         float dx = x - position.x;
-        float dy = (y - position.y) * 2; // multiplied by two to correct for isometric perspective
+        float dy = y - position.y;
         float minimum = radius + r;
         return dx*dx + dy*dy < minimum * minimum;
     }

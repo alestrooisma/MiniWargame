@@ -25,14 +25,14 @@ public class MiniWarGame extends ApplicationAdapter {
     public void create() {
         // Create model
         Army player = new Army(3);
-        player.add(new Unit(player, 30, 30));
-        player.add(new Unit(player, 40, 80));
-        player.add(new Unit(player, 70, 20));
+        player.add(new Unit(player, 30, 60));
+        player.add(new Unit(player, 40, 160));
+        player.add(new Unit(player, 70, 40));
 
         Army opponent = new Army(3);
-        opponent.add(new Unit(opponent, 610, 405));
-        opponent.add(new Unit(opponent, 545, 410));
-        opponent.add(new Unit(opponent, 600, 360));
+        opponent.add(new Unit(opponent, 610, 810));
+        opponent.add(new Unit(opponent, 545, 820));
+        opponent.add(new Unit(opponent, 600, 720));
 
         Battle battle = new Battle();
         battle.add(player);
