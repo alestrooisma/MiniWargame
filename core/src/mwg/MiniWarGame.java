@@ -44,7 +44,7 @@ public class MiniWarGame extends ApplicationAdapter {
         // Populate Battle Layer
         BattleLayer battleLayer = view.getBattleLayer();
         Texture texture = new Texture(Gdx.files.internal("spearman.png"));
-        skin = new Skin(texture, 37, 17, new Rectangle(-16, -4, 30, 42));
+        skin = new Skin(texture, 37, 17, new Rectangle(-16, -3, 30, 42));
         for (Army army : battle.getArmies()) {
             for (Unit unit : army.getUnits()) {
                 battleLayer.add(new Element(unit, skin));
