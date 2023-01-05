@@ -220,4 +220,12 @@ public class BattleLayer implements Layer {
         world.y = y * 2;
         return world;
     }
+
+    /**
+     * Read-only! Intended for debug purposes.
+     * @return the list of elements rendered by this layer
+     */
+    Array<Element> getElements() {
+        return elements;
+    }
 }

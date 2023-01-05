@@ -23,6 +23,10 @@ public class Skin implements Disposable {
         this.bounds = bounds;
     }
 
+    public Shape2D getBounds() {
+        return bounds;
+    }
+
     public void draw(SpriteBatch batch, float x, float y) {
         batch.draw(texture, x - origin.x, y - origin.y);
     }

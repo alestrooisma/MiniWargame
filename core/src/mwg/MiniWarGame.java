@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -53,7 +52,7 @@ public class MiniWarGame extends ApplicationAdapter {
         battleLayer.setPlayerArmy(player);
 
         // Set up an input event listener
-        Gdx.input.setInputProcessor(new InputHandler(view.getCamera(), battleLayer));
+        Gdx.input.setInputProcessor(new InputHandler());
     }
 
     @Override
@@ -72,24 +71,16 @@ public class MiniWarGame extends ApplicationAdapter {
         skin.dispose();
     }
 
-    private static class InputHandler extends InputAdapter {
-        // Not owned
-        private final Camera cam;
-        private final BattleLayer battleLayer;
+    private class InputHandler extends InputAdapter {
         // Utilities
         private final Vector3 vec = new Vector3();
-
-        public InputHandler(Camera cam, BattleLayer battleLayer) {
-            this.cam = cam;
-            this.battleLayer = battleLayer;
-        }
 
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             if (pointer == 0) {
                 vec.set(screenX, screenY, 0);
-                cam.unproject(vec);
-                battleLayer.touch(button, vec.x, vec.y);
+                view.getCamera().unproject(vec);
+                view.getBattleLayer().touch(button, vec.x, vec.y);
             }
             return true;
         }
@@ -97,6 +88,9 @@ public class MiniWarGame extends ApplicationAdapter {
         @Override
         public boolean keyUp(int keycode) {
             switch (keycode) {
+                case Keys.F12:
+                    view.getDebugLayer().toggle();
+                    return true;
                 case Keys.ESCAPE:
                     Gdx.app.exit();
                     return true;
