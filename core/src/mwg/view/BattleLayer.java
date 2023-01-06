@@ -184,10 +184,14 @@ public class BattleLayer implements Layer {
     private void determineMovementDestination(float x, float y) {
         pixelToWorldCoordinates(x, y, world);
         Element e = getNearestElement(world.x, world.y);
-        if (e.getUnit().overlaps(world.x, world.y, selected.getUnit().getRadius())) {
+        if (e.getUnit().occupies(world.x, world.y)){
             movementWorldDestination.set(e.getUnit().getPosition()).sub(selected.getUnit().getPosition());
             float dist = movementWorldDestination.len() - e.getUnit().getRadius() - selected.getUnit().getRadius();
             movementWorldDestination.nor().scl(dist).add(selected.getUnit().getPosition());
+        } else if (e.getUnit().overlaps(world.x, world.y, selected.getUnit().getRadius())) {
+            movementWorldDestination.set(world).sub(e.getUnit().getPosition());
+            float dist = e.getUnit().getRadius() + selected.getUnit().getRadius();
+            movementWorldDestination.nor().scl(dist).add(e.getUnit().getPosition());
         } else {
             movementWorldDestination.set(world.x, world.y);
         }
