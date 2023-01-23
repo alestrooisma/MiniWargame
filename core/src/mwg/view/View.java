@@ -4,6 +4,7 @@ import aetherdriven.view.LayeredView;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import mwg.controller.BattleController;
 
 public class View implements Disposable {
     // Owned
@@ -12,14 +13,14 @@ public class View implements Disposable {
     private final BattleLayer battleLayer;
     private final DebugLayer debugLayer;
 
-    public View() {
+    public View(BattleController controller) {
         // Create a viewport
         viewport = new ScreenViewport();
         Camera cam = viewport.getCamera();
 
         // Create the view
         view = new LayeredView(0.2f, 0.2f, 0.2f);
-        battleLayer = new BattleLayer(cam);
+        battleLayer = new BattleLayer(controller, cam);
         view.add(battleLayer);
         debugLayer = new DebugLayer(battleLayer, cam);
         view.add(debugLayer);

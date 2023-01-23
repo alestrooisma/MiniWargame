@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import mwg.controller.BattleController;
 import mwg.model.Army;
 import mwg.model.Battle;
 import mwg.model.Unit;
@@ -37,8 +38,12 @@ public class MiniWarGame extends ApplicationAdapter {
         battle.add(player);
         battle.add(opponent);
 
+        // Create the controller
+        BattleController controller = new BattleController();
+        controller.setBattle(battle);
+
         // Create the view
-        view = new View();
+        view = new View(controller);
 
         // Populate Battle Layer
         BattleLayer battleLayer = view.getBattleLayer();

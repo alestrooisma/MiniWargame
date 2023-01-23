@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import mwg.controller.BattleController;
 import mwg.model.Army;
 
 public class BattleLayer implements Layer {
@@ -22,6 +23,7 @@ public class BattleLayer implements Layer {
     private final Skin selectionTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 17);
     private final Skin selectionBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 17);
     // Not owned
+    private final BattleController controller;
     private final Camera cam;
     private Army player = null;
     private Element selected = null;
@@ -31,7 +33,8 @@ public class BattleLayer implements Layer {
     private final Vector2 movementWorldDestination = new Vector2();
     private final Vector2 world = new Vector2();
 
-    public BattleLayer(Camera cam) {
+    public BattleLayer(BattleController controller, Camera cam) {
+        this.controller = controller;
         this.cam = cam;
     }
 
@@ -183,33 +186,8 @@ public class BattleLayer implements Layer {
 
     private void determineMovementDestination(float x, float y) {
         pixelToWorldCoordinates(x, y, world);
-        Element e = getNearestElement(world.x, world.y);
-        if (e.getUnit().occupies(world.x, world.y)){
-            movementWorldDestination.set(e.getUnit().getPosition()).sub(selected.getUnit().getPosition());
-            float dist = movementWorldDestination.len() - e.getUnit().getRadius() - selected.getUnit().getRadius();
-            movementWorldDestination.nor().scl(dist).add(selected.getUnit().getPosition());
-        } else if (e.getUnit().overlaps(world.x, world.y, selected.getUnit().getRadius())) {
-            movementWorldDestination.set(world).sub(e.getUnit().getPosition());
-            float dist = e.getUnit().getRadius() + selected.getUnit().getRadius();
-            movementWorldDestination.nor().scl(dist).add(e.getUnit().getPosition());
-        } else {
-            movementWorldDestination.set(world.x, world.y);
-        }
-
+        controller.getPathfinder().determineMovementDestinationTowards(selected.getUnit(), world.x, world.y, movementWorldDestination);
         worldToPixelCoordinates(movementWorldDestination, movementPixelDestination);
-    }
-
-    private Element getNearestElement(float x, float y) {
-        Element nearest = null;
-        float minimumDistance = Float.MAX_VALUE;
-        for (Element e : elements) {
-            float distance = e.getUnit().getPosition().dst(x, y);
-            if (e != selected && distance < minimumDistance) {
-                minimumDistance = distance;
-                nearest = e;
-            }
-        }
-        return nearest;
     }
 
     private static Vector3 worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
