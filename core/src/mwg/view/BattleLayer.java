@@ -85,7 +85,7 @@ public class BattleLayer implements Layer {
         if (selected != null) {
             determineMovementDestination(mousePixelPosition);
             batch.setColor(1, 1, 1, 0.5f);
-            if (canBeMovedTo(movementWorldDestination)) {
+            if (isDestinationAvailable()) {
                 selectionTop.draw(batch, movementPixelDestination);
                 selectionBottom.draw(batch, movementPixelDestination);
             } else {
@@ -139,7 +139,7 @@ public class BattleLayer implements Layer {
             selected = touched;
         } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT) {
             determineMovementDestination(x, y);
-            if (canBeMovedTo(movementWorldDestination)) {
+            if (isDestinationAvailable()) {
                 selected.getUnit().setPosition(movementWorldDestination.x, movementWorldDestination.y);
                 engine.add(selected.getPosition(), movementPixelDestination, 300);
             }
@@ -167,17 +167,8 @@ public class BattleLayer implements Layer {
         return touchedElement;
     }
 
-    private boolean canBeMovedTo(Vector2 position) {
-        return canBeMovedTo(position.x, position.y);
-    }
-
-    private boolean canBeMovedTo(float x, float y) {
-        for (Element e : elements) {
-            if (e != selected && e.getUnit().overlaps(x, y, selected.getUnit().getRadius())) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isDestinationAvailable() {
+        return controller.getPathfinder().isDestinationAvailable(selected.getUnit(), movementWorldDestination);
     }
 
     private void determineMovementDestination(Vector3 position) {

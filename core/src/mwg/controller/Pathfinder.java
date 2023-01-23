@@ -28,6 +28,21 @@ public class Pathfinder {
         return null;
     }
 
+    public boolean isDestinationAvailable(Unit movingUnit, Vector2 destination) {
+        return isDestinationAvailable(movingUnit, destination.x, destination.y);
+    }
+
+    public boolean isDestinationAvailable(Unit movingUnit, float x, float y) {
+        for (Army army : battle.getArmies()) {
+            for (Unit unit : army.getUnits()) {
+                if (unit != movingUnit && unit.overlaps(x, y, movingUnit.getRadius())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
         Unit nearestUnit = getNearestUnit(x, y);
         if (nearestUnit.occupies(x, y)){
