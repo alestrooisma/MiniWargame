@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
 import mwg.model.Army;
+import mwg.model.Unit;
 
 public class BattleLayer implements Layer {
     // Owned
@@ -26,7 +27,6 @@ public class BattleLayer implements Layer {
     private final BattleController controller;
     private final Camera cam;
     private Army player = null;
-    private Element selected = null;
     // Utilities
     private final Vector3 mousePixelPosition = new Vector3();
     private final Vector3 movementPixelDestination = new Vector3();
@@ -70,7 +70,7 @@ public class BattleLayer implements Layer {
         // Render all elements (with decoration)
         elements.sort();
         for (Element e : elements) {
-            if (e == selected) {
+            if (e.getUnit() == controller.getSelected()) {
                 renderElement(e, selectionTop, selectionBottom);
             } else if (e == hovered && e.getUnit().getArmy() == player) {
                 renderElement(e, selectionTop, selectionBottom, 0.75f);
@@ -82,7 +82,7 @@ public class BattleLayer implements Layer {
         }
 
         // Render indicator for movement target position
-        if (selected != null) {
+        if (controller.getSelected() != null) {
             determineMovementDestination(mousePixelPosition);
             batch.setColor(1, 1, 1, 0.5f);
             if (isDestinationAvailable()) {
@@ -136,11 +136,12 @@ public class BattleLayer implements Layer {
 
         Element touched = getElementAt(x, y);
         if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
-            selected = touched;
-        } else if (engine.isIdle() && selected != null && button == Buttons.RIGHT) {
+            controller.setSelected(touched.getUnit());
+        } else if (engine.isIdle() && controller.getSelected() != null && button == Buttons.RIGHT) {
             determineMovementDestination(x, y);
             if (isDestinationAvailable()) {
-                selected.getUnit().setPosition(movementWorldDestination.x, movementWorldDestination.y);
+                controller.getSelected().setPosition(movementWorldDestination.x, movementWorldDestination.y);
+                Element selected = findElement(controller.getSelected());
                 engine.add(selected.getPosition(), movementPixelDestination, 300);
             }
         }
@@ -167,8 +168,17 @@ public class BattleLayer implements Layer {
         return touchedElement;
     }
 
+    private Element findElement(Unit unit) {
+        for (Element e : elements) {
+            if (e.getUnit() == unit) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     private boolean isDestinationAvailable() {
-        return controller.getPathfinder().isDestinationAvailable(selected.getUnit(), movementWorldDestination);
+        return controller.getPathfinder().isDestinationAvailable(controller.getSelected(), movementWorldDestination);
     }
 
     private void determineMovementDestination(Vector3 position) {
@@ -177,7 +187,7 @@ public class BattleLayer implements Layer {
 
     private void determineMovementDestination(float x, float y) {
         pixelToWorldCoordinates(x, y, world);
-        controller.getPathfinder().determineMovementDestinationTowards(selected.getUnit(), world.x, world.y, movementWorldDestination);
+        controller.getPathfinder().determineMovementDestinationTowards(controller.getSelected(), world.x, world.y, movementWorldDestination);
         worldToPixelCoordinates(movementWorldDestination, movementPixelDestination);
     }
 
