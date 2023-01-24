@@ -44,7 +44,7 @@ public class Pathfinder {
     }
 
     public void determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
-        Unit nearestUnit = getNearestUnit(x, y);
+        Unit nearestUnit = getNearestUnit(x, y, movingUnit);
         if (nearestUnit.occupies(x, y)){
             result.set(nearestUnit.getPosition()).sub(movingUnit.getPosition());
             float dist = result.len() - movingUnit.getRadius() - nearestUnit.getRadius();
