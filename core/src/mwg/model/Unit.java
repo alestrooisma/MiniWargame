@@ -30,8 +30,8 @@ public class Unit {
         return position;
     }
 
-    public void setPosition(float x, float y) {
-        position.set(x, y);
+    public void setPosition(Vector2 position) {
+        this.position.set(position);
     }
 
     public float getRadius() {
@@ -48,6 +48,6 @@ public class Unit {
         float dx = x - position.x;
         float dy = y - position.y;
         float minimum = radius + r;
-        return dx*dx + dy*dy < minimum * minimum * (1 - 1e-5f); // Accomodate for floating point errors
+        return dx*dx + dy*dy < minimum * minimum * (1 - 1e-5f); // Accommodate for floating point errors
     }
 }

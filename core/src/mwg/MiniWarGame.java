@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import mwg.controller.BattleController;
+import mwg.controller.events.ModelEventListener;
 import mwg.model.Army;
 import mwg.model.Battle;
 import mwg.model.Unit;
@@ -55,6 +56,10 @@ public class MiniWarGame extends ApplicationAdapter {
             }
         }
         battleLayer.setPlayerArmy(player);
+
+        // Set up the event system
+        controller.getDealer().register(new ModelEventListener());
+        controller.getDealer().register(battleLayer);
 
         // Set up an input event listener
         Gdx.input.setInputProcessor(new InputHandler());

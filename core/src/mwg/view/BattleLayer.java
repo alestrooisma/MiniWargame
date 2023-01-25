@@ -11,10 +11,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
+import mwg.controller.events.EventListener;
+import mwg.controller.events.MoveEvent;
 import mwg.model.Army;
 import mwg.model.Unit;
 
-public class BattleLayer implements Layer {
+public class BattleLayer implements Layer, EventListener {
     // Owned
     private final SpriteBatch batch = new SpriteBatch();
     private final Array<Element> elements = new Array<>();
@@ -130,20 +132,12 @@ public class BattleLayer implements Layer {
     }
 
     public void touch(int button, float x, float y) {
-        if (engine.isBusy()) {
-            return;
-        }
-
-        Element touched = getElementAt(x, y);
-        if (button == Buttons.LEFT && (touched == null || touched.getUnit().getArmy() == player)) {
-            controller.setSelected(touched.getUnit());
-        } else if (engine.isIdle() && controller.getSelected() != null && button == Buttons.RIGHT) {
-            determineMovementDestination(x, y);
-            if (isDestinationAvailable()) {
-                controller.getSelected().setPosition(movementWorldDestination.x, movementWorldDestination.y);
-                Element selected = findElement(controller.getSelected());
-                engine.add(selected.getPosition(), movementPixelDestination, 300);
-            }
+        if (button == Buttons.LEFT && engine.isIdle()) {
+            Element touched = getElementAt(x, y);
+            pixelToWorldCoordinates(x, y, world);
+            controller.interact(world.x, world.y, touched != null ? touched.getUnit() : null);
+        } else if (button == Buttons.RIGHT) {
+            controller.cancel();
         }
     }
 
@@ -202,6 +196,15 @@ public class BattleLayer implements Layer {
         world.x = x;
         world.y = y * 2;
         return world;
+    }
+
+    @Override
+    public void handleMoveEvent(MoveEvent event) {
+        Element element = findElement(controller.getSelected());
+        if (element != null) {
+            worldToPixelCoordinates(event.getDestination(), movementPixelDestination);
+            engine.add(element.getPosition(), movementPixelDestination, 300);
+        }
     }
 
     /**
