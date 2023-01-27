@@ -5,10 +5,17 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
+import mwg.controller.events.EventListener;
+import mwg.controller.events.MoveEvent;
+import mwg.controller.events.RangedAttackEvent;
+import mwg.model.Battle;
 
-public class DebugLayer implements Layer {
+public class DebugLayer implements Layer, EventListener {
     // Owned
     private final ShapeRenderer renderer = new ShapeRenderer();
+    private final Vector3 origin = new Vector3();
+    private final Vector3 target = new Vector3();
     // Not owned
     private final BattleLayer battleLayer;
     private final Camera cam;
@@ -46,6 +53,7 @@ public class DebugLayer implements Layer {
                 renderer.ellipse(e.getPosition().x - r, e.getPosition().y - r / 2, r * 2, r);
             }
         }
+        renderer.line(origin, target);
         renderer.end();
     }
 
@@ -56,5 +64,15 @@ public class DebugLayer implements Layer {
 
     public void toggle() {
         enabled = !enabled;
+    }
+
+    @Override
+    public void handleMoveEvent(MoveEvent event) {
+    }
+
+    @Override
+    public void handleRangedAttackEvent(RangedAttackEvent event) {
+        BattleLayer.worldToPixelCoordinates(event.getAttacker().getPosition(), origin);
+        BattleLayer.worldToPixelCoordinates(event.getTarget().getPosition(), target);
     }
 }

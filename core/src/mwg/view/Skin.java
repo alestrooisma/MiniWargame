@@ -2,6 +2,7 @@ package mwg.view;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -27,12 +28,23 @@ public class Skin implements Disposable {
         return bounds;
     }
 
-    public void draw(SpriteBatch batch, float x, float y) {
-        batch.draw(texture, x - origin.x, y - origin.y);
+    public void draw(SpriteBatch batch, float x, float y, float rotation) {
+        batch.draw(texture, x - origin.x, y - origin.y,
+                origin.x, origin.y,
+                texture.getWidth(), texture.getHeight(),
+                1, 1,
+                -rotation * MathUtils.radiansToDegrees,
+                0, 0,
+                texture.getWidth(), texture.getHeight(),
+                false, false);
     }
 
-    public void draw(SpriteBatch batch, Vector2 position) {
-        draw(batch, position.x, position.y);
+    public void draw(SpriteBatch batch, Vector3 position, float rotation) {
+        draw(batch, position.x, position.y, rotation);
+    }
+
+    public void draw(SpriteBatch batch, float x, float y) {
+        draw(batch, x, y, 0);
     }
 
     public void draw(SpriteBatch batch, Vector3 position) {

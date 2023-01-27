@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -37,6 +38,8 @@ public class BattleLayer implements Layer, EventListener {
     private final Vector2 movementWorldDestination = new Vector2();
     private final Vector2 world = new Vector2();
     private final Vector3 pixel = new Vector3();
+    private final Vector3 origin = new Vector3();
+    private final Vector3 target = new Vector3();
 
     public BattleLayer(BattleController controller, Camera cam) {
         this.controller = controller;
@@ -97,7 +100,7 @@ public class BattleLayer implements Layer, EventListener {
                     renderUnit(e, selectionTop, selectionBottom, 0.5f);
                 }
             } else {
-                e.getSkin().draw(batch, e.getPosition());
+                e.getSkin().draw(batch, e.getPosition(), e.getRotation());
             }
         }
 
@@ -203,14 +206,14 @@ public class BattleLayer implements Layer, EventListener {
         worldToPixelCoordinates(movementWorldDestination, movementPixelDestination);
     }
 
-    private static Vector3 worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
+    public static Vector3 worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
         pixel.x = world.x;
         pixel.y = world.y / 2;
         pixel.z = 0;
         return pixel;
     }
 
-    private static Vector2 pixelToWorldCoordinates(float x, float y, Vector2 world) {
+    public static Vector2 pixelToWorldCoordinates(float x, float y, Vector2 world) {
         world.x = x;
         world.y = y * 2;
         return world;
@@ -227,10 +230,22 @@ public class BattleLayer implements Layer, EventListener {
 
     @Override
     public void handleRangedAttackEvent(RangedAttackEvent event) {
+        worldToPixelCoordinates(event.getAttacker().getPosition(), origin);
+        worldToPixelCoordinates(event.getTarget().getPosition(), target);
+
+        // Create the projectile element
         Element projectile = new Element(null, spear);
+        projectile.setPosition(origin);
+
+        // Set the rotation of the projectile
+        pixel.set(target).sub(origin);
+        float angle = MathUtils.acos(pixel.dot(0, 1, 0) / pixel.len());
+        System.out.println(angle * MathUtils.radiansToDegrees);
+        projectile.setRotation(angle);
+
+        // Add to render list and animation engine
         elements.add(projectile);
-        worldToPixelCoordinates(event.getAttacker().getPosition(), projectile.getPosition());
-        engine.add(projectile.getPosition(), worldToPixelCoordinates(event.getTarget().getPosition(), pixel), 900);
+        engine.add(projectile.getPosition(), target, 600);
     }
 
     /**

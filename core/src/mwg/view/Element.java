@@ -7,6 +7,7 @@ import mwg.model.Unit;
 public class Element implements Comparable<Element>, Disposable {
     // Owned
     private final Vector3 position = new Vector3();
+    private float rotation = 0;
     // Not owned
     private final Unit unit;
     private final Skin skin;
@@ -22,6 +23,14 @@ public class Element implements Comparable<Element>, Disposable {
 
     public void setPosition(Vector3 position) {
         this.position.set(position);
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
     }
 
     public Unit getUnit() {
