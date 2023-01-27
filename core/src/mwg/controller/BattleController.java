@@ -3,6 +3,7 @@ package mwg.controller;
 import com.badlogic.gdx.math.Vector2;
 import mwg.controller.events.EventDealer;
 import mwg.controller.events.MoveEvent;
+import mwg.controller.events.RangedAttackEvent;
 import mwg.model.Battle;
 import mwg.model.Unit;
 
@@ -42,6 +43,8 @@ public class BattleController {
             if (touched != null && touched.getArmy() == battle.getArmies().first()) {
                 selected = touched;
             }
+        } else if (touched != null) {
+            dealer.deal(new RangedAttackEvent(selected, touched));
         } else {
             pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
             if (pathfinder.isDestinationAvailable(selected, destination)) {

@@ -20,6 +20,10 @@ public class Element implements Comparable<Element>, Disposable {
         return position;
     }
 
+    public void setPosition(Vector3 position) {
+        this.position.set(position);
+    }
+
     public Unit getUnit() {
         return unit;
     }
@@ -29,7 +33,7 @@ public class Element implements Comparable<Element>, Disposable {
     }
 
     public boolean contains(float x, float y) {
-        return skin.contains(x - position.x, y - position.y);
+        return skin.getBounds() != null && skin.contains(x - position.x, y - position.y);
     }
 
     public void dispose() {

@@ -37,10 +37,14 @@ public class DebugLayer implements Layer {
         renderer.setProjectionMatrix(cam.combined);
         renderer.setColor(Color.MAGENTA);
         for (Element e : battleLayer.getElements()) {
-            Rectangle rect = (Rectangle) e.getSkin().getBounds();
-            renderer.rect(e.getPosition().x + rect.x, e.getPosition().y + rect.y, rect.width, rect.height);
-            float r = e.getUnit().getRadius();
-            renderer.ellipse(e.getPosition().x - r, e.getPosition().y - r / 2, r * 2, r);
+            if (e.getSkin().getBounds() != null) {
+                Rectangle rect = (Rectangle) e.getSkin().getBounds();
+                renderer.rect(e.getPosition().x + rect.x, e.getPosition().y + rect.y, rect.width, rect.height);
+            }
+            if (e.getUnit() != null) {
+                float r = e.getUnit().getRadius();
+                renderer.ellipse(e.getPosition().x - r, e.getPosition().y - r / 2, r * 2, r);
+            }
         }
         renderer.end();
     }

@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
 import mwg.controller.events.EventListener;
 import mwg.controller.events.MoveEvent;
+import mwg.controller.events.RangedAttackEvent;
 import mwg.model.Army;
 import mwg.model.Unit;
 
@@ -25,6 +26,7 @@ public class BattleLayer implements Layer, EventListener {
     private final Skin hoverBottom = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-bottom.png")), 36, 17);
     private final Skin selectionTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 17);
     private final Skin selectionBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 17);
+    private final Skin spear = new Skin(new Texture(Gdx.files.internal("spear.png")), 39.5f, 33.5f);
     // Not owned
     private final BattleController controller;
     private final Camera cam;
@@ -34,6 +36,7 @@ public class BattleLayer implements Layer, EventListener {
     private final Vector3 movementPixelDestination = new Vector3();
     private final Vector2 movementWorldDestination = new Vector2();
     private final Vector2 world = new Vector2();
+    private final Vector3 pixel = new Vector3();
 
     public BattleLayer(BattleController controller, Camera cam) {
         this.controller = controller;
@@ -43,7 +46,9 @@ public class BattleLayer implements Layer, EventListener {
     public void add(Element e) {
         elements.add(e);
         // Set the element position to the pixel coordinates matching the unit's world coordinates
-        worldToPixelCoordinates(e.getUnit().getPosition(), e.getPosition());
+        if (e.getUnit() != null) {
+            worldToPixelCoordinates(e.getUnit().getPosition(), e.getPosition());
+        }
     }
 
     public void setPlayerArmy(Army player) {
@@ -56,6 +61,15 @@ public class BattleLayer implements Layer, EventListener {
 
     @Override
     public void update(float dt) {
+        // Ugly hack to remove animation-only elements when they are not needed anymore
+        if (engine.isIdle()) {
+            for (Element e : elements) {
+                if (e.getUnit() == null) {
+                    elements.removeValue(e, true);
+                }
+            }
+        }
+
         engine.update(dt);
     }
 
@@ -72,14 +86,18 @@ public class BattleLayer implements Layer, EventListener {
         // Render all elements (with decoration)
         elements.sort();
         for (Element e : elements) {
-            if (e.getUnit() == controller.getSelected()) {
-                renderElement(e, selectionTop, selectionBottom);
-            } else if (e == hovered && e.getUnit().getArmy() == player) {
-                renderElement(e, selectionTop, selectionBottom, 0.75f);
-            } else if (e == hovered) { // Opponent army
-                renderElement(e, hoverTop, hoverBottom, 0.75f);
+            if (e.getUnit() != null) {
+                if (e.getUnit() == controller.getSelected()) {
+                    renderUnit(e, selectionTop, selectionBottom);
+                } else if (e == hovered && e.getUnit().getArmy() == player) {
+                    renderUnit(e, selectionTop, selectionBottom, 0.75f);
+                } else if (e == hovered) { // Opponent army
+                    renderUnit(e, hoverTop, hoverBottom, 0.75f);
+                } else {
+                    renderUnit(e, selectionTop, selectionBottom, 0.5f);
+                }
             } else {
-                renderElement(e, selectionTop, selectionBottom, 0.5f);
+                e.getSkin().draw(batch, e.getPosition());
             }
         }
 
@@ -100,11 +118,11 @@ public class BattleLayer implements Layer, EventListener {
         batch.end();
     }
 
-    public void renderElement(Element e, Skin top, Skin bottom) {
-        renderElement(e, top, bottom, 1);
+    public void renderUnit(Element e, Skin top, Skin bottom) {
+        renderUnit(e, top, bottom, 1);
     }
 
-    public void renderElement(Element e, Skin top, Skin bottom, float alpha) {
+    public void renderUnit(Element e, Skin top, Skin bottom, float alpha) {
         Color c = e.getUnit().getArmy() == player ? Color.BLUE : Color.RED;
 
         // Draw top of selection ring
@@ -153,7 +171,7 @@ public class BattleLayer implements Layer, EventListener {
         // for which the coordinates are in its "hit box".
         for (int i = elements.size - 1; touchedElement == null && i >= 0; i--) {
             Element e = elements.get(i);
-            if (e.contains(x, y) || e.getUnit().occupies(world.x, world.y)) {
+            if (e.contains(x, y) || (e.getUnit() != null && e.getUnit().occupies(world.x, world.y))) {
                 touchedElement = e;
             }
         }
@@ -205,6 +223,14 @@ public class BattleLayer implements Layer, EventListener {
             worldToPixelCoordinates(event.getDestination(), movementPixelDestination);
             engine.add(element.getPosition(), movementPixelDestination, 300);
         }
+    }
+
+    @Override
+    public void handleRangedAttackEvent(RangedAttackEvent event) {
+        Element projectile = new Element(null, spear);
+        elements.add(projectile);
+        worldToPixelCoordinates(event.getAttacker().getPosition(), projectile.getPosition());
+        engine.add(projectile.getPosition(), worldToPixelCoordinates(event.getTarget().getPosition(), pixel), 900);
     }
 
     /**
