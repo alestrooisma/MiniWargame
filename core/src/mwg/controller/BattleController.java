@@ -39,7 +39,7 @@ public class BattleController {
 
     public void interact(float x, float y, Unit touched) {
         if (selected == null) {
-            if (touched.getArmy() == battle.getArmies().first()) {
+            if (touched != null && touched.getArmy() == battle.getArmies().first()) {
                 selected = touched;
             }
         } else {
