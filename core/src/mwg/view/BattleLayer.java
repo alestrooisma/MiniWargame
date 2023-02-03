@@ -232,6 +232,8 @@ public class BattleLayer implements Layer, EventListener {
     public void handleRangedAttackEvent(RangedAttackEvent event) {
         worldToPixelCoordinates(event.getAttacker().getPosition(), origin);
         worldToPixelCoordinates(event.getTarget().getPosition(), target);
+        origin.z = 20; // TODO determine properly
+        target.z = origin.z;
 
         // Create the projectile element
         Element projectile = new Element(null, spear);

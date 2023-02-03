@@ -40,7 +40,7 @@ public class Skin implements Disposable {
     }
 
     public void draw(SpriteBatch batch, Vector3 position, float rotation) {
-        draw(batch, position.x, position.y, rotation);
+        draw(batch, position.x, position.y + position.z, rotation);
     }
 
     public void draw(SpriteBatch batch, float x, float y) {
