@@ -43,7 +43,7 @@ public class Pathfinder {
         return true;
     }
 
-    public void determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
+    public Unit determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
         Unit nearestUnit = getNearestUnit(x, y, movingUnit);
         if (nearestUnit.occupies(x, y)){
             result.set(nearestUnit.getPosition()).sub(movingUnit.getPosition());
@@ -55,7 +55,9 @@ public class Pathfinder {
             result.nor().scl(dist).add(nearestUnit.getPosition());
         } else {
             result.set(x, y);
+            nearestUnit = null;
         }
+        return nearestUnit;
     }
 
     public Unit getNearestUnit(float x, float y) {

@@ -23,19 +23,16 @@ public class BattleLayer implements Layer, EventListener {
     private final SpriteBatch batch = new SpriteBatch();
     private final Array<Element> elements = new Array<>();
     private final TweenEngine engine = new TweenEngine();
-    private final Skin hoverTop = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-top.png")), 36, 17);
-    private final Skin hoverBottom = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-bottom.png")), 36, 17);
-    private final Skin selectionTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 17);
-    private final Skin selectionBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 17);
+    private final Skin ellipseTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 17);
+    private final Skin ellipseBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 17);
+    private final Skin targetTop = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-top.png")), 36, 17);
+    private final Skin targetBottom = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-bottom.png")), 36, 17);
     private final Skin spear = new Skin(new Texture(Gdx.files.internal("spear.png")), 39.5f, 33.5f);
     // Not owned
     private final BattleController controller;
     private final Camera cam;
     private Army player = null;
     // Utilities
-    private final Vector3 mousePixelPosition = new Vector3();
-    private final Vector3 movementPixelDestination = new Vector3();
-    private final Vector2 movementWorldDestination = new Vector2();
     private final Vector2 world = new Vector2();
     private final Vector3 pixel = new Vector3();
     private final Vector3 origin = new Vector3();
@@ -78,9 +75,7 @@ public class BattleLayer implements Layer, EventListener {
 
     @Override
     public void render() {
-        // Get element beneath mouse cursor
-        cam.unproject(mousePixelPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-        Element hovered = getElementAt(mousePixelPosition);
+        BattleController.Interaction interaction = getInteraction();
 
         // Prepare drawing
         batch.setProjectionMatrix(cam.combined);
@@ -90,14 +85,20 @@ public class BattleLayer implements Layer, EventListener {
         elements.sort();
         for (Element e : elements) {
             if (e.getUnit() != null) {
-                if (e.getUnit() == controller.getSelected()) {
-                    renderUnit(e, selectionTop, selectionBottom);
-                } else if (e == hovered && e.getUnit().getArmy() == player) {
-                    renderUnit(e, selectionTop, selectionBottom, 0.75f);
-                } else if (e == hovered) { // Opponent army
-                    renderUnit(e, hoverTop, hoverBottom, 0.75f);
+                if (e.getUnit() == controller.getTarget()) {
+                    switch (interaction) {
+                        case SELECT:
+                            renderUnit(e, ellipseTop, ellipseBottom, 0.75f);
+                            break;
+                        case CHARGE:
+                        case RANGED:
+                            renderUnit(e, targetTop, targetBottom, 0.75f);
+                            break;
+                    }
+                } else if (e.getUnit() == controller.getSelected()) {
+                    renderUnit(e, ellipseTop, ellipseBottom);
                 } else {
-                    renderUnit(e, selectionTop, selectionBottom, 0.5f);
+                    renderUnit(e, ellipseTop, ellipseBottom, 0.5f);
                 }
             } else {
                 e.getSkin().draw(batch, e.getPosition(), e.getRotation());
@@ -105,20 +106,30 @@ public class BattleLayer implements Layer, EventListener {
         }
 
         // Render indicator for movement target position
-        if (controller.getSelected() != null) {
-            determineMovementDestination(mousePixelPosition);
-            batch.setColor(1, 1, 1, 0.5f);
-            if (isDestinationAvailable()) {
-                selectionTop.draw(batch, movementPixelDestination);
-                selectionBottom.draw(batch, movementPixelDestination);
-            } else {
-                hoverTop.draw(batch, movementPixelDestination);
-                hoverBottom.draw(batch, movementPixelDestination);
-            }
-            batch.setColor(1, 1, 1, 1);
+        switch (interaction) {
+            case MOVE:
+            case CHARGE:
+                worldToPixelCoordinates(controller.getDestination(), pixel);
+                batch.setColor(1, 1, 1, 0.5f);
+                ellipseTop.draw(batch, pixel);
+                ellipseBottom.draw(batch, pixel);
+                batch.setColor(1, 1, 1, 1);
+                break;
         }
 
+        // Finalize drawing
         batch.end();
+    }
+
+    private BattleController.Interaction getInteraction() {
+        // Get unit beneath mouse cursor
+        cam.unproject(pixel.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Element hoveredElement = getElementAt(pixel);
+        Unit hoveredUnit = hoveredElement != null ? hoveredElement.getUnit() : null;
+
+        // Get interaction from controller (what happens if player presses LMB)
+        pixelToWorldCoordinates(pixel, world);
+        return controller.determineInteraction(world.x, world.y, hoveredUnit);
     }
 
     public void renderUnit(Element e, Skin top, Skin bottom) {
@@ -192,39 +203,27 @@ public class BattleLayer implements Layer, EventListener {
         return null;
     }
 
-    private boolean isDestinationAvailable() {
-        return controller.getPathfinder().isDestinationAvailable(controller.getSelected(), movementWorldDestination);
-    }
-
-    private void determineMovementDestination(Vector3 position) {
-        determineMovementDestination(position.x, position.y);
-    }
-
-    private void determineMovementDestination(float x, float y) {
-        pixelToWorldCoordinates(x, y, world);
-        controller.getPathfinder().determineMovementDestinationTowards(controller.getSelected(), world.x, world.y, movementWorldDestination);
-        worldToPixelCoordinates(movementWorldDestination, movementPixelDestination);
-    }
-
-    public static Vector3 worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
+    public static void worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
         pixel.x = world.x;
         pixel.y = world.y / 2;
         pixel.z = 0;
-        return pixel;
     }
 
-    public static Vector2 pixelToWorldCoordinates(float x, float y, Vector2 world) {
+    public static void pixelToWorldCoordinates(Vector3 pixel, Vector2 world) {
+        pixelToWorldCoordinates(pixel.x, pixel.y, world);
+    }
+
+    public static void pixelToWorldCoordinates(float x, float y, Vector2 world) {
         world.x = x;
         world.y = y * 2;
-        return world;
     }
 
     @Override
     public void handleMoveEvent(MoveEvent event) {
         Element element = findElement(controller.getSelected());
         if (element != null) {
-            worldToPixelCoordinates(event.getDestination(), movementPixelDestination);
-            engine.add(element.getPosition(), movementPixelDestination, 300);
+            worldToPixelCoordinates(event.getDestination(), pixel);
+            engine.add(element.getPosition(), pixel, 300);
         }
     }
 
