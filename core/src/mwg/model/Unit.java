@@ -13,7 +13,7 @@ public class Unit {
     }
 
     public Unit(Army army, Vector2 position) {
-        this(army, position, 26);
+        this(army, position, 1);
     }
 
     public Unit(Army army, Vector2 position, float radius) {

@@ -204,8 +204,8 @@ public class BattleLayer implements Layer, EventListener {
     }
 
     public static void worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
-        pixel.x = world.x;
-        pixel.y = world.y / 2;
+        pixel.x = world.x * 25;
+        pixel.y = world.y / 2 * 25;
         pixel.z = 0;
     }
 
@@ -214,8 +214,8 @@ public class BattleLayer implements Layer, EventListener {
     }
 
     public static void pixelToWorldCoordinates(float x, float y, Vector2 world) {
-        world.x = x;
-        world.y = y * 2;
+        world.x = x / 25f;
+        world.y = y * 2 / 25f;
     }
 
     @Override
