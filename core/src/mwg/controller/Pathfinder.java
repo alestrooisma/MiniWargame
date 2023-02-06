@@ -8,10 +8,8 @@ import mwg.model.Unit;
 public class Pathfinder {
     // Not owned
     private Battle battle;
-
-    public Battle getBattle() {
-        return battle;
-    }
+    // Utilities
+    private final Vector2 vec = new Vector2();
 
     public void setBattle(Battle battle) {
         this.battle = battle;
@@ -44,12 +42,18 @@ public class Pathfinder {
     }
 
     public Unit determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
+        // Apply limited movement range
+        float limit = movingUnit.getMaxMovement();
+        float dist2 = vec.set(x, y).sub(movingUnit.getPosition()).len2();
+        if (dist2 > limit*limit) {
+            vec.nor().scl(limit).add(movingUnit.getPosition());
+            x = vec.x;
+            y = vec.y;
+        }
+
+        // Determine exact destination in case area is occupied
         Unit nearestUnit = getNearestUnit(x, y, movingUnit);
-        if (nearestUnit.occupies(x, y)){
-            result.set(nearestUnit.getPosition()).sub(movingUnit.getPosition());
-            float dist = result.len() - movingUnit.getRadius() - nearestUnit.getRadius();
-            result.nor().scl(dist).add(movingUnit.getPosition());
-        } else if (nearestUnit.overlaps(x, y, movingUnit.getRadius())) {
+        if (nearestUnit.overlaps(x, y, movingUnit.getRadius())) {
             result.set(x, y).sub(nearestUnit.getPosition());
             float dist = movingUnit.getRadius() + nearestUnit.getRadius();
             result.nor().scl(dist).add(nearestUnit.getPosition());

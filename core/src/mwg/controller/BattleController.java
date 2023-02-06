@@ -21,10 +21,6 @@ public class BattleController {
     // Utilities
     private final Vector2 destination = new Vector2();
 
-    public Battle getBattle() {
-        return battle;
-    }
-
     public Unit getSelected() {
         return selected;
     }
@@ -42,10 +38,6 @@ public class BattleController {
         pathfinder.setBattle(battle);
     }
 
-    public Pathfinder getPathfinder() {
-        return pathfinder;
-    }
-
     public EventDealer getDealer() {
         return dealer;
     }
@@ -61,7 +53,12 @@ public class BattleController {
             return SELECT;
         } else if (selected != null && touched != null) { //TODO check if selected can do ranged attack
             target = touched;
-            return RANGED;
+            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
+                return CHARGE;
+            } else {
+                return RANGED;
+            }
         } else if (selected != null) {
             target = pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
             if (pathfinder.isDestinationAvailable(selected, destination)) {

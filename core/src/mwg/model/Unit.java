@@ -50,4 +50,8 @@ public class Unit {
         float minimum = radius + r;
         return dx*dx + dy*dy < minimum * minimum * (1 - 1e-5f); // Accommodate for floating point errors
     }
+
+    public float getMaxMovement() {
+        return 10;
+    }
 }
