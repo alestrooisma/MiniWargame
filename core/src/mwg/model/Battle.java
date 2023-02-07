@@ -1,7 +1,7 @@
 package mwg.model;
 
 import com.badlogic.gdx.utils.Array;
-import mwg.controller.events.Event;
+import mwg.model.events.Event;
 
 public class Battle {
     // Owned

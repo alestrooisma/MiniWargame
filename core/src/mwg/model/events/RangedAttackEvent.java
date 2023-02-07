@@ -1,4 +1,4 @@
-package mwg.controller.events;
+package mwg.model.events;
 
 import mwg.model.Unit;
 

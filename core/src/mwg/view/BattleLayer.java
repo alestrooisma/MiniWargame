@@ -12,9 +12,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
-import mwg.controller.events.EventListener;
-import mwg.controller.events.MoveEvent;
-import mwg.controller.events.RangedAttackEvent;
+import mwg.model.events.EventListener;
+import mwg.model.events.MoveEvent;
+import mwg.model.events.RangedAttackEvent;
 import mwg.model.Army;
 import mwg.model.Unit;
 

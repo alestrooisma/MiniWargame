@@ -1,4 +1,4 @@
-package mwg.controller.events;
+package mwg.model.events;
 
 import mwg.model.Unit;
 
@@ -14,5 +14,5 @@ public abstract class Event {
         return unit;
     }
 
-    abstract void accept(EventListener listener);
+    public abstract void accept(EventListener listener);
 }

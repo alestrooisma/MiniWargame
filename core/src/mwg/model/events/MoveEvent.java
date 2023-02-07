@@ -1,4 +1,4 @@
-package mwg.controller.events;
+package mwg.model.events;
 
 import com.badlogic.gdx.math.Vector2;
 import mwg.model.Unit;
