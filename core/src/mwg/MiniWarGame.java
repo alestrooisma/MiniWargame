@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import mwg.controller.BattleController;
+import mwg.model.GameState;
 import mwg.model.events.ModelEventListener;
 import mwg.model.Army;
 import mwg.model.Battle;
@@ -39,9 +40,12 @@ public class MiniWarGame extends ApplicationAdapter {
         battle.add(player);
         battle.add(opponent);
 
+        // Initialize game state
+        GameState state = new GameState();
+        state.setBattle(battle);
+
         // Create the controller
-        BattleController controller = new BattleController();
-        controller.setBattle(battle);
+        BattleController controller = new BattleController(state);
 
         // Create the view
         view = new View(controller);
@@ -58,9 +62,7 @@ public class MiniWarGame extends ApplicationAdapter {
         battleLayer.setPlayerArmy(player);
 
         // Set up the event system
-        ModelEventListener modelEventListener = new ModelEventListener();
-        modelEventListener.setBattle(battle);
-        controller.getDealer().register(modelEventListener);
+        controller.getDealer().register(new ModelEventListener(state));
         controller.getDealer().register(battleLayer);
         controller.getDealer().register(view.getDebugLayer());
 

@@ -3,22 +3,26 @@ package mwg.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import mwg.model.GameState;
+import mwg.model.Unit;
 import mwg.model.events.MoveEvent;
 import mwg.model.events.RangedAttackEvent;
-import mwg.model.Battle;
-import mwg.model.Unit;
-import static mwg.controller.BattleController.Interaction.*;
 
 public class BattleController {
     // Owned
     private final EventDealer dealer = new EventDealer();
-    private final Pathfinder pathfinder = new Pathfinder();
+    private final Pathfinder pathfinder;
     // Not owned
-    private Battle battle;
+    private final GameState state;
     private Unit selected = null;
     private Unit target = null;
     // Utilities
     private final Vector2 destination = new Vector2();
+
+    public BattleController(GameState state) {
+        this.state = state;
+        this.pathfinder = new Pathfinder(state);
+    }
 
     public Unit getSelected() {
         return selected;
@@ -32,11 +36,6 @@ public class BattleController {
         return destination;
     }
 
-    public void setBattle(Battle battle) {
-        this.battle = battle;
-        pathfinder.setBattle(battle);
-    }
-
     public EventDealer getDealer() {
         return dealer;
     }
@@ -47,41 +46,41 @@ public class BattleController {
             touched = null;
         }
 
-        if (touched != null && touched.getArmy() == battle.getArmies().first()) {
+        if (touched != null && touched.getArmy() == state.getBattle().getArmies().first()) {
             target = touched;
-            return SELECT;
+            return Interaction.SELECT;
         } else if (selected != null && touched != null) { //TODO check if selected can do ranged attack
             target = touched;
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || !battle.mayPerformRangedAttack(selected)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || !state.mayPerformRangedAttack(selected)) {
                 return determineMovementInteraction(x, y);
             } else {
-                return RANGED;
+                return Interaction.RANGED;
             }
         } else if (selected != null) {
             return determineMovementInteraction(x, y);
         } else {
             target = null;
-            return NONE;
+            return Interaction.NONE;
         }
     }
 
     private Interaction determineMovementInteraction(float x, float y) {
-        if (!battle.mayMove(selected)) {
+        if (!state.mayMove(selected)) {
             target = null;
-            return NONE;
+            return Interaction.NONE;
         }
 
         target = pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
         if (pathfinder.isDestinationAvailable(selected, destination)) {
-            if (target != null && target.getArmy() != battle.getArmies().first()) {
-                return CHARGE;
+            if (target != null && target.getArmy() != state.getBattle().getArmies().first()) {
+                return Interaction.CHARGE;
             } else {
                 target = null;
-                return MOVE;
+                return Interaction.MOVE;
             }
         } else {
             target = null;
-            return NONE;
+            return Interaction.NONE;
         }
     }
 

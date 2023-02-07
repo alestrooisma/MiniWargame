@@ -1,23 +1,24 @@
 package mwg.model.events;
 
 import mwg.model.Battle;
+import mwg.model.GameState;
 
 public class ModelEventListener implements EventListener {
     // Not owned
-    private Battle battle;
+    private final GameState state;
 
-    public void setBattle(Battle battle) {
-        this.battle = battle;
+    public ModelEventListener(GameState state) {
+        this.state = state;
     }
 
     @Override
     public void handleMoveEvent(MoveEvent event) {
-        battle.add(event);
+        state.add(event);
         event.getUnit().setPosition(event.getDestination());
     }
 
     @Override
     public void handleRangedAttackEvent(RangedAttackEvent event) {
-        battle.add(event);
+        state.add(event);
     }
 }

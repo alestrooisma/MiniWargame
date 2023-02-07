@@ -2,21 +2,21 @@ package mwg.controller;
 
 import com.badlogic.gdx.math.Vector2;
 import mwg.model.Army;
-import mwg.model.Battle;
+import mwg.model.GameState;
 import mwg.model.Unit;
 
 public class Pathfinder {
     // Not owned
-    private Battle battle;
+    private final GameState state;
     // Utilities
     private final Vector2 vec = new Vector2();
 
-    public void setBattle(Battle battle) {
-        this.battle = battle;
+    public Pathfinder(GameState state) {
+        this.state = state;
     }
 
     public Unit getUnitAt(float x, float y) {
-        for (Army army : battle.getArmies()) {
+        for (Army army : state.getBattle().getArmies()) {
             for (Unit unit : army.getUnits()) {
                 if (unit.occupies(x, y)) {
                     return unit;
@@ -31,7 +31,7 @@ public class Pathfinder {
     }
 
     public boolean isDestinationAvailable(Unit movingUnit, float x, float y) {
-        for (Army army : battle.getArmies()) {
+        for (Army army : state.getBattle().getArmies()) {
             for (Unit unit : army.getUnits()) {
                 if (unit != movingUnit && unit.overlaps(x, y, movingUnit.getRadius())) {
                     return false;
@@ -71,7 +71,7 @@ public class Pathfinder {
     public Unit getNearestUnit(float x, float y, Unit except) {
         Unit nearest = null;
         float minimumDistance = Float.MAX_VALUE;
-        for (Army army : battle.getArmies()) {
+        for (Army army : state.getBattle().getArmies()) {
             for (Unit unit : army.getUnits()) {
                 float distance = unit.getPosition().dst(x, y);
                 if (unit != except && distance < minimumDistance) {
