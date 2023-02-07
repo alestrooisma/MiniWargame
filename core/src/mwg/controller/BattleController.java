@@ -54,23 +54,26 @@ public class BattleController {
         } else if (selected != null && touched != null) { //TODO check if selected can do ranged attack
             target = touched;
             if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
-                pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
-                return CHARGE;
+                return determineMovementInteraction(x, y);
             } else {
                 return RANGED;
             }
         } else if (selected != null) {
-            target = pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
-            if (pathfinder.isDestinationAvailable(selected, destination)) {
-                if (target != null && target.getArmy() != battle.getArmies().first()) {
-                    return CHARGE;
-                } else {
-                    target = null;
-                    return MOVE;
-                }
+            return determineMovementInteraction(x, y);
+        } else {
+            target = null;
+            return NONE;
+        }
+    }
+
+    private Interaction determineMovementInteraction(float x, float y) {
+        target = pathfinder.determineMovementDestinationTowards(selected, x, y, destination);
+        if (pathfinder.isDestinationAvailable(selected, destination)) {
+            if (target != null && target.getArmy() != battle.getArmies().first()) {
+                return CHARGE;
             } else {
                 target = null;
-                return NONE;
+                return MOVE;
             }
         } else {
             target = null;
