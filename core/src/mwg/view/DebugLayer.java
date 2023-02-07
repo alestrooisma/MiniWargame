@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector3;
 import mwg.controller.events.EventListener;
 import mwg.controller.events.MoveEvent;
 import mwg.controller.events.RangedAttackEvent;
-import mwg.model.Battle;
 
 public class DebugLayer implements Layer, EventListener {
     // Owned
@@ -72,7 +71,7 @@ public class DebugLayer implements Layer, EventListener {
 
     @Override
     public void handleRangedAttackEvent(RangedAttackEvent event) {
-        BattleLayer.worldToPixelCoordinates(event.getAttacker().getPosition(), origin);
+        BattleLayer.worldToPixelCoordinates(event.getUnit().getPosition(), origin);
         BattleLayer.worldToPixelCoordinates(event.getTarget().getPosition(), target);
     }
 }

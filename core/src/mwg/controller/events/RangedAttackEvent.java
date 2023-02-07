@@ -2,16 +2,12 @@ package mwg.controller.events;
 
 import mwg.model.Unit;
 
-public class RangedAttackEvent implements Event {
-    private final Unit attacker, target;
+public class RangedAttackEvent extends Event {
+    private final Unit target;
 
     public RangedAttackEvent(Unit attacker, Unit target) {
-        this.attacker = attacker;
+        super(attacker);
         this.target = target;
-    }
-
-    public Unit getAttacker() {
-        return attacker;
     }
 
     public Unit getTarget() {

@@ -58,7 +58,9 @@ public class MiniWarGame extends ApplicationAdapter {
         battleLayer.setPlayerArmy(player);
 
         // Set up the event system
-        controller.getDealer().register(new ModelEventListener());
+        ModelEventListener modelEventListener = new ModelEventListener();
+        modelEventListener.setBattle(battle);
+        controller.getDealer().register(modelEventListener);
         controller.getDealer().register(battleLayer);
         controller.getDealer().register(view.getDebugLayer());
 
