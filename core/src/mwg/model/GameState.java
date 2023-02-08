@@ -17,7 +17,6 @@ public class GameState {
     public void setBattle(Battle battle) {
         this.battle = battle;
         currentPlayerIndex = -1;
-        nextTurn();
     }
 
     public Army getCurrentPlayer() {
@@ -28,11 +27,11 @@ public class GameState {
         events.add(event);
     }
 
-    public void nextTurn() {
-        // Set next player as current
+    public void startTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % battle.getArmies().size;
+    }
 
-        // Reset event log
+    public void endTurn() {
         events.clear();
     }
 

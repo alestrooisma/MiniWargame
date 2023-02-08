@@ -12,11 +12,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
+import mwg.model.events.EndTurnEvent;
 import mwg.model.events.EventListener;
 import mwg.model.events.MoveEvent;
 import mwg.model.events.RangedAttackEvent;
 import mwg.model.Army;
 import mwg.model.Unit;
+import mwg.model.events.StartTurnEvent;
 
 public class BattleLayer implements Layer, EventListener {
     // Owned
@@ -216,6 +218,14 @@ public class BattleLayer implements Layer, EventListener {
     public static void pixelToWorldCoordinates(float x, float y, Vector2 world) {
         world.x = x / 25f;
         world.y = y * 2 / 25f;
+    }
+
+    @Override
+    public void handleStartTurnEvent(StartTurnEvent event) {
+    }
+
+    @Override
+    public void handleEndTurnEvent(EndTurnEvent event) {
     }
 
     @Override

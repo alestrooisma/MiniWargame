@@ -13,6 +13,7 @@ import mwg.model.events.ModelEventListener;
 import mwg.model.Army;
 import mwg.model.Battle;
 import mwg.model.Unit;
+import mwg.model.events.StartTurnEvent;
 import mwg.view.BattleLayer;
 import mwg.view.Element;
 import mwg.view.Skin;
@@ -69,6 +70,9 @@ public class MiniWarGame extends ApplicationAdapter {
 
         // Set up an input event listener
         Gdx.input.setInputProcessor(new InputHandler());
+
+        // Start the first turn
+        controller.getDealer().deal(new StartTurnEvent());
     }
 
     @Override

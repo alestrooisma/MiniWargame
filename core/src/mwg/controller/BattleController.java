@@ -5,8 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import mwg.model.GameState;
 import mwg.model.Unit;
+import mwg.model.events.EndTurnEvent;
 import mwg.model.events.MoveEvent;
 import mwg.model.events.RangedAttackEvent;
+import mwg.model.events.StartTurnEvent;
 
 public class BattleController {
     // Owned
@@ -111,7 +113,8 @@ public class BattleController {
 
     public void endTurn() {
         selected = null;
-        state.nextTurn();
+        dealer.deal(new EndTurnEvent());
+        dealer.deal(new StartTurnEvent());
     }
 
     public enum Interaction {

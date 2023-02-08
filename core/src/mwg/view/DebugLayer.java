@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import mwg.model.events.EndTurnEvent;
 import mwg.model.events.EventListener;
 import mwg.model.events.MoveEvent;
 import mwg.model.events.RangedAttackEvent;
+import mwg.model.events.StartTurnEvent;
 
 public class DebugLayer implements Layer, EventListener {
     // Owned
@@ -63,6 +65,14 @@ public class DebugLayer implements Layer, EventListener {
 
     public void toggle() {
         enabled = !enabled;
+    }
+
+    @Override
+    public void handleStartTurnEvent(StartTurnEvent event) {
+    }
+
+    @Override
+    public void handleEndTurnEvent(EndTurnEvent event) {
     }
 
     @Override

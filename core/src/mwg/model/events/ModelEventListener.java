@@ -1,6 +1,5 @@
 package mwg.model.events;
 
-import mwg.model.Battle;
 import mwg.model.GameState;
 
 public class ModelEventListener implements EventListener {
@@ -9,6 +8,16 @@ public class ModelEventListener implements EventListener {
 
     public ModelEventListener(GameState state) {
         this.state = state;
+    }
+
+    @Override
+    public void handleStartTurnEvent(StartTurnEvent event) {
+        state.startTurn();
+    }
+
+    @Override
+    public void handleEndTurnEvent(EndTurnEvent event) {
+        state.endTurn();
     }
 
     @Override
