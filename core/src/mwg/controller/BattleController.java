@@ -3,6 +3,9 @@ package mwg.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import mwg.controller.ai.AI;
+import mwg.controller.ai.PassiveAI;
 import mwg.model.GameState;
 import mwg.model.Unit;
 import mwg.model.events.EndTurnEvent;
@@ -14,6 +17,7 @@ public class BattleController {
     // Owned
     private final EventDealer dealer = new EventDealer();
     private final Pathfinder pathfinder;
+    private final Array<AI> aiList = new Array<>(2); //TODO where to put this...
     // Not owned
     private final GameState state;
     private Unit selected = null;
@@ -24,6 +28,9 @@ public class BattleController {
     public BattleController(GameState state) {
         this.state = state;
         this.pathfinder = new Pathfinder(state);
+
+        aiList.add(null);
+        aiList.add(new PassiveAI());
     }
 
     public Unit getSelected() {
@@ -112,19 +119,56 @@ public class BattleController {
     }
 
     public void endTurn() {
+        // Clear any relevant state in this controller
+        selected = null;
+
+        // Fire end turn event
+        dealer.deal(new EndTurnEvent());
+
         // Determine next player and round number
+        StartTurnEvent startTurnEvent = createStartTurnEvent();
+
+        // Let AIs execute their turn
+        while (isAI(startTurnEvent.getPlayerIndex())) {
+            performAiTurn(startTurnEvent);
+
+            // Update startTurnEvent after the AI's turn is done
+            startTurnEvent = createStartTurnEvent();
+        }
+
+        // Fire event for new player turn
+        dealer.deal(startTurnEvent);
+    }
+
+    private StartTurnEvent createStartTurnEvent() {
+        // Determine next player
         int nextPlayerIndex = (state.getCurrentPlayerIndex() + 1) % state.getBattle().getArmies().size;
+
+        // Update round number if required
         int round = state.getRound();
         if (nextPlayerIndex == 0) {
             round++;
         }
 
-        // Clear any relevant state in this controller
-        selected = null;
+        // Return a StartTurnEvent
+        return new StartTurnEvent(nextPlayerIndex, round);
+    }
 
-        // Fire end and start turn events
+    private boolean isAI(int playerIndex) {
+        return aiList.get(playerIndex) != null;
+    }
+
+    private void performAiTurn(StartTurnEvent startTurnEvent) {
+        // Start the turn
+        dealer.deal(startTurnEvent);
+
+        // Run the AI
+        AI ai = aiList.get(startTurnEvent.getPlayerIndex());
+        ai.update();
+        //TODO fire events for AI's actions
+
+        // End the turn
         dealer.deal(new EndTurnEvent());
-        dealer.deal(new StartTurnEvent(nextPlayerIndex, round));
     }
 
     public enum Interaction {
