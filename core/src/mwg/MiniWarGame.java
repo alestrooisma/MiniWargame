@@ -20,6 +20,7 @@ import mwg.view.View;
 
 public class MiniWarGame extends ApplicationAdapter {
     // Owned
+    private BattleController controller;
     private View view;
     private Skin skin;
 
@@ -45,7 +46,7 @@ public class MiniWarGame extends ApplicationAdapter {
         state.setBattle(battle);
 
         // Create the controller
-        BattleController controller = new BattleController(state);
+        controller = new BattleController(state);
 
         // Create the view
         view = new View(controller);
@@ -103,6 +104,9 @@ public class MiniWarGame extends ApplicationAdapter {
         @Override
         public boolean keyUp(int keycode) {
             switch (keycode) {
+                case Keys.ENTER:
+                    controller.endTurn();
+                    return true;
                 case Keys.F12:
                     view.getDebugLayer().toggle();
                     return true;

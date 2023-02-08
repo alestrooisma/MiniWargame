@@ -41,6 +41,11 @@ public class BattleController {
     }
 
     public Interaction determineInteraction(float x, float y, Unit touched) {
+        if (state.getCurrentPlayer() != state.getBattle().getArmies().first()) {
+            target = null;
+            return Interaction.NONE;
+        }
+
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
                 && touched != null && !touched.occupies(x, y)) {
             touched = null;
@@ -49,7 +54,7 @@ public class BattleController {
         if (touched != null && touched.getArmy() == state.getBattle().getArmies().first()) {
             target = touched;
             return Interaction.SELECT;
-        } else if (selected != null && touched != null) { //TODO check if selected can do ranged attack
+        } else if (selected != null && touched != null) {
             target = touched;
             if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || !state.mayPerformRangedAttack(selected)) {
                 return determineMovementInteraction(x, y);
@@ -102,6 +107,11 @@ public class BattleController {
 
     public void cancel() {
         selected = null;
+    }
+
+    public void endTurn() {
+        selected = null;
+        state.nextTurn();
     }
 
     public enum Interaction {
