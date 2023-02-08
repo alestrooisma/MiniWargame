@@ -112,15 +112,19 @@ public class BattleController {
     }
 
     public void endTurn() {
-        // Determine next player
+        // Determine next player and round number
         int nextPlayerIndex = (state.getCurrentPlayerIndex() + 1) % state.getBattle().getArmies().size;
+        int round = state.getRound();
+        if (nextPlayerIndex == 0) {
+            round++;
+        }
 
         // Clear any relevant state in this controller
         selected = null;
 
         // Fire end and start turn events
         dealer.deal(new EndTurnEvent());
-        dealer.deal(new StartTurnEvent(nextPlayerIndex));
+        dealer.deal(new StartTurnEvent(nextPlayerIndex, round));
     }
 
     public enum Interaction {

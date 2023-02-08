@@ -7,6 +7,7 @@ public class GameState {
     // Owned
     private final Array<Event> events = new Array<>();
     private int currentPlayerIndex;
+    private int round;
     // Not owned
     private Battle battle;
 
@@ -26,12 +27,17 @@ public class GameState {
         return battle.getArmies().get(currentPlayerIndex);
     }
 
+    public int getRound() {
+        return round;
+    }
+
     public void add(Event event) {
         events.add(event);
     }
 
-    public void startTurn(int playerIndex) {
+    public void startTurn(int playerIndex, int round) {
         this.currentPlayerIndex = playerIndex;
+        this.round = round;
     }
 
     public void endTurn() {
