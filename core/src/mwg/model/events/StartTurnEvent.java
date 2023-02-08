@@ -1,9 +1,15 @@
 package mwg.model.events;
 
 public class StartTurnEvent extends Event {
+    private final int playerIndex;
 
-    public StartTurnEvent() {
+    public StartTurnEvent(int playerIndex) {
         super(null);
+        this.playerIndex = playerIndex;
+    }
+
+    public int getPlayerIndex() {
+        return playerIndex;
     }
 
     @Override

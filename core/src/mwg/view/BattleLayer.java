@@ -222,6 +222,7 @@ public class BattleLayer implements Layer, EventListener {
 
     @Override
     public void handleStartTurnEvent(StartTurnEvent event) {
+        System.out.println("Start turn for player " + (event.getPlayerIndex() + 1));
     }
 
     @Override

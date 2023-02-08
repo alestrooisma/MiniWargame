@@ -12,7 +12,7 @@ public class ModelEventListener implements EventListener {
 
     @Override
     public void handleStartTurnEvent(StartTurnEvent event) {
-        state.startTurn();
+        state.startTurn(event.getPlayerIndex());
     }
 
     @Override
