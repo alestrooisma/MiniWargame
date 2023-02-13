@@ -43,6 +43,14 @@ public class Pathfinder {
         return true;
     }
 
+    public void determineMovementDestinationTowards(Unit movingUnit, Unit targetUnit, Vector2 result) {
+        determineMovementDestinationTowards(movingUnit, targetUnit.getPosition(), result);
+    }
+
+    public void determineMovementDestinationTowards(Unit movingUnit, Vector2 position, Vector2 result) {
+        determineMovementDestinationTowards(movingUnit, position.x, position.y, result);
+    }
+
     public Unit determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
         movement.set(x, y).sub(movingUnit.getPosition());
 

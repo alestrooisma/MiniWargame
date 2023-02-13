@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.ai.AI;
-import mwg.controller.ai.PassiveAI;
 import mwg.model.GameState;
 import mwg.model.Unit;
 import mwg.model.events.EndTurnEvent;
@@ -17,20 +16,18 @@ public class BattleController {
     // Owned
     private final EventDealer dealer = new EventDealer();
     private final Pathfinder pathfinder;
-    private final Array<AI> aiList = new Array<>(2); //TODO where to put this...
     // Not owned
     private final GameState state;
+    private final Array<AI> aiList; //TODO where to put this...
     private Unit selected = null;
     private Unit target = null;
     // Utilities
     private final Vector2 destination = new Vector2();
 
-    public BattleController(GameState state) {
+    public BattleController(GameState state, Array<AI> aiList) {
         this.state = state;
+        this.aiList = aiList;
         this.pathfinder = new Pathfinder(state);
-
-        aiList.add(null);
-        aiList.add(new PassiveAI());
     }
 
     public Unit getSelected() {
@@ -165,10 +162,24 @@ public class BattleController {
         // Run the AI
         AI ai = aiList.get(startTurnEvent.getPlayerIndex());
         ai.update();
-        //TODO fire events for AI's actions
+        fireEvents(ai.getTargeting());
 
         // End the turn
         dealer.deal(new EndTurnEvent());
+    }
+
+    private void fireEvents(Array<AI.Targeting> targetingList) {
+        for (AI.Targeting targeting : targetingList) {
+            switch (targeting.action) {
+                case MOVE:
+                case CHARGE:
+                    dealer.deal(new MoveEvent(targeting.unit, targeting.destination));
+                    break;
+                case RANGED:
+                    dealer.deal(new RangedAttackEvent(targeting.unit, targeting.target));
+                    break;
+            }
+        }
     }
 
     public enum Interaction {

@@ -8,7 +8,10 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
+import mwg.controller.ai.AI;
+import mwg.controller.ai.BasicAI;
 import mwg.model.GameState;
 import mwg.model.events.ModelEventListener;
 import mwg.model.Army;
@@ -47,11 +50,17 @@ public class MiniWarGame extends ApplicationAdapter {
         GameState state = new GameState();
         state.setBattle(battle);
 
+        // Set up the AI
+        Array<AI> aiList = new Array<>(2);
+        aiList.add(null);
+        aiList.add(new BasicAI(state, state.getBattle().getArmies().get(1))); //TODO this is not safe for changes in state!
+
         // Create the controller
-        controller = new BattleController(state);
+        controller = new BattleController(state, aiList);
 
         // Create the view
         view = new View(controller);
+        view.getAiLayer().setAi(aiList.get(1));
 
         // Populate Battle Layer
         BattleLayer battleLayer = view.getBattleLayer();

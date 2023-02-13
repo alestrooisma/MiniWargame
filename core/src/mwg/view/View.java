@@ -12,6 +12,7 @@ public class View implements Disposable {
     private final LayeredView view;
     private final BattleLayer battleLayer;
     private final DebugLayer debugLayer;
+    private final AiLayer aiLayer;
 
     public View(BattleController controller) {
         // Create a viewport
@@ -24,6 +25,8 @@ public class View implements Disposable {
         view.add(battleLayer);
         debugLayer = new DebugLayer(battleLayer, cam);
         view.add(debugLayer);
+        aiLayer = new AiLayer(cam);
+        view.add(aiLayer);
     }
 
     public Camera getCamera() {
@@ -36,6 +39,10 @@ public class View implements Disposable {
 
     public DebugLayer getDebugLayer() {
         return debugLayer;
+    }
+
+    public AiLayer getAiLayer() {
+        return aiLayer;
     }
 
     public void resize(int width, int height) {

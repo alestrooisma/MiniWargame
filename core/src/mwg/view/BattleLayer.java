@@ -243,7 +243,7 @@ public class BattleLayer implements Layer, EventListener {
 
     @Override
     public void handleMoveEvent(MoveEvent event) {
-        Element element = findElement(controller.getSelected());
+        Element element = findElement(event.getUnit());
         if (element != null) {
             worldToPixelCoordinates(event.getDestination(), pixel);
             engine.add(element.getPosition(), pixel, 300);
