@@ -33,6 +33,10 @@ public class AiLayer implements Layer {
 
     @Override
     public void update(float dt) {
+        if (ai == null) {
+            return;
+        }
+
         ai.update();
     }
 

@@ -27,6 +27,7 @@ public class MiniWarGame extends ApplicationAdapter {
     private BattleController controller;
     private View view;
     private Skin skin;
+    private Array<AI> aiList;
 
     @Override
     public void create() {
@@ -50,7 +51,7 @@ public class MiniWarGame extends ApplicationAdapter {
         state.setBattle(battle);
 
         // Set up the AI
-        Array<AI> aiList = new Array<>(2);
+        aiList = new Array<>(2);
         aiList.add(null);
         aiList.add(new BasicAI(state, state.getBattle().getArmies().get(1)));
 
@@ -59,7 +60,6 @@ public class MiniWarGame extends ApplicationAdapter {
 
         // Create the view
         view = new View(controller);
-        view.getAiLayer().setAi(aiList.get(1));
 
         // Populate Battle Layer
         BattleLayer battleLayer = view.getBattleLayer();
@@ -101,6 +101,8 @@ public class MiniWarGame extends ApplicationAdapter {
     }
 
     private class InputHandler extends InputAdapter {
+        // Owned
+        private int aiNumber = 0;
         // Utilities
         private final Vector3 vec = new Vector3();
 
@@ -119,6 +121,10 @@ public class MiniWarGame extends ApplicationAdapter {
             switch (keycode) {
                 case Keys.ENTER:
                     controller.endTurn();
+                    return true;
+                case Keys.F11:
+                    aiNumber = (aiNumber + 1) % aiList.size;
+                    view.getAiLayer().setAi(aiList.get(aiNumber));
                     return true;
                 case Keys.F12:
                     view.getDebugLayer().toggle();
