@@ -17,6 +17,7 @@ public class DebugLayer implements Layer, EventListener {
     private final ShapeRenderer renderer = new ShapeRenderer();
     private final Vector3 origin = new Vector3();
     private final Vector3 target = new Vector3();
+    private final Vector3 ellipse = new Vector3();
     // Not owned
     private final BattleLayer battleLayer;
     private final Camera cam;
@@ -51,11 +52,16 @@ public class DebugLayer implements Layer, EventListener {
             }
             if (e.getUnit() != null) {
                 float r = e.getUnit().getRadius();
-                renderer.ellipse(e.getPosition().x - r, e.getPosition().y - r / 2, r * 2, r);
+                BattleLayer.worldToPixelCoordinates(r, r, ellipse);
+                renderEllipse(renderer, e.getPosition(), ellipse);
             }
         }
         renderer.line(origin, target);
         renderer.end();
+    }
+
+    private static void renderEllipse(ShapeRenderer renderer, Vector3 center, Vector3 axes) {
+        renderer.ellipse(center.x - axes.x, center.y - axes.y, axes.x * 2, axes.y * 2);
     }
 
     @Override

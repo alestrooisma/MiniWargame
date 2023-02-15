@@ -206,8 +206,12 @@ public class BattleLayer implements Layer, EventListener {
     }
 
     public static void worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
-        pixel.x = world.x * 25;
-        pixel.y = world.y / 2 * 25;
+        worldToPixelCoordinates(world.x, world.y, pixel);
+    }
+
+    public static void worldToPixelCoordinates(float x, float y, Vector3 pixel) {
+        pixel.x = x * 25;
+        pixel.y = y / 2 * 25;
         pixel.z = 0;
     }
 
