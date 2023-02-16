@@ -3,6 +3,7 @@ package mwg.view;
 import aetherdriven.view.Layer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,19 +11,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
+import mwg.model.Army;
+import mwg.model.Unit;
 import mwg.model.events.EndTurnEvent;
 import mwg.model.events.EventListener;
 import mwg.model.events.MoveEvent;
 import mwg.model.events.RangedAttackEvent;
-import mwg.model.Army;
-import mwg.model.Unit;
 import mwg.model.events.StartTurnEvent;
 
 public class BattleLayer implements Layer, EventListener {
     // Owned
     private final SpriteBatch batch = new SpriteBatch();
+    private final TextRenderer textRenderer = new TextRenderer(batch);
     private final Array<Element> elements = new Array<>();
     private final TweenEngine engine = new TweenEngine();
     private final Skin ellipseTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 17);
@@ -155,6 +158,11 @@ public class BattleLayer implements Layer, EventListener {
 
         // Reset color
         batch.setColor(Color.WHITE);
+
+        // Draw unit name
+        if (Gdx.input.isKeyPressed(Keys.ALT_LEFT)) {
+            textRenderer.draw(e.getUnit().getName(), e.getPosition().x, e.getPosition().y - 5, Align.top);
+        }
     }
 
     @Override
