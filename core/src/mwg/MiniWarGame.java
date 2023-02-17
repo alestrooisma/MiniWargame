@@ -1,5 +1,6 @@
 package mwg;
 
+import aetherdriven.Maths;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -31,7 +32,7 @@ public class MiniWarGame extends ApplicationAdapter {
         Army player = new Army(3);
         player.add(new Unit("Unit 1", player, 30/25f, 60/25f));
         player.add(new Unit("Unit 2", player, 40/25f, 160/25f));
-        player.add(new Unit("Unit 3", player, 75/25f, 40/25f));
+        player.add(new Unit("Unit 3", player, 80/25f, 40/25f));
 
         Army opponent = new Army(3);
         opponent.add(new Unit("Enemy 1", opponent, 610/25f, 810/25f));
