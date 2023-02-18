@@ -1,6 +1,5 @@
 package mwg;
 
-import aetherdriven.Maths;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -12,11 +11,11 @@ import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
 import mwg.controller.ai.AI;
 import mwg.controller.ai.BasicAI;
-import mwg.model.GameState;
-import mwg.model.events.ModelEventListener;
 import mwg.model.Army;
 import mwg.model.Battle;
+import mwg.model.GameState;
 import mwg.model.Unit;
+import mwg.model.events.ModelEventListener;
 import mwg.model.events.StartTurnEvent;
 import mwg.view.BattleLayer;
 import mwg.view.Element;
@@ -53,7 +52,7 @@ public class MiniWarGame extends ApplicationAdapter {
         // Set up the AI
         Array<AI> aiList = new Array<>(2);
         aiList.add(null);
-        aiList.add(new BasicAI(state, state.getBattle().getArmies().get(1))); //TODO this is not safe for changes in state!
+        aiList.add(new BasicAI(state, state.getBattle().getArmies().get(1)));
 
         // Create the controller
         controller = new BattleController(state, aiList);

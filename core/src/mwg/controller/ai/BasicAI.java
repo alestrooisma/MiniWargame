@@ -20,10 +20,10 @@ public class BasicAI implements AI {
     public BasicAI(GameState state, Army army) {
         this.battle = state.getBattle();
         this.thisArmy = army;
-        this.pathfinder = new Pathfinder(state);
         this.units = new Array<>(army.getUnits().size);
         this.targeting = new Array<>(army.getUnits().size);
         this.opponents = createOpponents();
+        this.pathfinder = new Pathfinder(state, targeting);
     }
 
     private Array<Unit> createOpponents() {
@@ -71,8 +71,8 @@ public class BasicAI implements AI {
 
         // Choose movement destinations
         for (Targeting t : targeting) {
-            t.action = Action.MOVE;
             pathfinder.determineMovementDestinationTowards(t.unit, t.target, t.destination);
+            t.action = Action.MOVE;
         }
     }
 

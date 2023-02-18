@@ -2,6 +2,8 @@ package mwg.controller;
 
 import aetherdriven.Maths;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import mwg.controller.ai.AI;
 import mwg.model.Army;
 import mwg.model.GameState;
 import mwg.model.Unit;
@@ -9,12 +11,18 @@ import mwg.model.Unit;
 public class Pathfinder {
     // Not owned
     private final GameState state;
+    private final Array.ArrayIterator<AI.Targeting> mutations;
     // Utilities
     private final Vector2 movement = new Vector2();
     private final Vector2 vec = new Vector2();
 
     public Pathfinder(GameState state) {
+        this(state, new Array<AI.Targeting>(0));
+    }
+
+    public Pathfinder(GameState state, Array<AI.Targeting> mutations) {
         this.state = state;
+        this.mutations = new Array.ArrayIterator<>(mutations, true);
     }
 
     public Unit getUnitAt(float x, float y) {
@@ -44,7 +52,7 @@ public class Pathfinder {
     }
 
     public void determineMovementDestinationTowards(Unit movingUnit, Unit targetUnit, Vector2 result) {
-        determineMovementDestinationTowards(movingUnit, targetUnit.getPosition(), result);
+        determineMovementDestinationTowards(movingUnit, pos(targetUnit), result);
     }
 
     public void determineMovementDestinationTowards(Unit movingUnit, Vector2 position, Vector2 result) {
@@ -52,7 +60,7 @@ public class Pathfinder {
     }
 
     public Unit determineMovementDestinationTowards(Unit movingUnit, float x, float y, Vector2 result) {
-        movement.set(x, y).sub(movingUnit.getPosition());
+        movement.set(x, y).sub(pos(movingUnit));
 
         // Apply limited movement range
         float limit = movingUnit.getMaxMovement();
@@ -60,7 +68,7 @@ public class Pathfinder {
         if (distance > limit) {
             movement.scl(limit / distance);
         }
-        result.set(movement).add(movingUnit.getPosition());
+        result.set(movement).add(pos(movingUnit));
 
         // Find nearest unit in the moving unit's path
         return determineFirstIntersection(movingUnit, result);
@@ -87,7 +95,7 @@ public class Pathfinder {
     }
 
     public boolean isInFrontOf(Unit movingUnit, Unit unit) {
-        vec.set(unit.getPosition()).sub(movingUnit.getPosition());
+        vec.set(pos(unit)).sub(pos(movingUnit));
         return movement.dot(vec) > 0;
     }
 
@@ -95,17 +103,17 @@ public class Pathfinder {
         // Determine coefficients
         float a = movement.y;
         float b = -movement.x;
-        float c = a * movingUnit.getPosition().x + b * movingUnit.getPosition().y;
-        float x0 = unit.getPosition().x;
-        float y0 = unit.getPosition().y;
+        float c = a * pos(movingUnit).x + b * pos(movingUnit).y;
+        float x0 = pos(unit).x;
+        float y0 = pos(unit).y;
 
         // Determine intersections
         int n = Maths.intersection(a, b, c, x0, y0, movingUnit.getRadius() + unit.getRadius());
 
         // Return nearest intersection
         if (n == 2) {
-            float intersection1dist2 = vec.set(Maths.intersection1).sub(movingUnit.getPosition()).len2();
-            float intersection2dist2 = vec.set(Maths.intersection2).sub(movingUnit.getPosition()).len2();
+            float intersection1dist2 = vec.set(Maths.intersection1).sub(pos(movingUnit)).len2();
+            float intersection2dist2 = vec.set(Maths.intersection2).sub(pos(movingUnit)).len2();
             if (intersection1dist2 < intersection2dist2) {
                 result.set(Maths.intersection1);
                 return intersection1dist2;
@@ -127,7 +135,7 @@ public class Pathfinder {
         float minimumDistance = Float.MAX_VALUE;
         for (Army army : state.getBattle().getArmies()) {
             for (Unit unit : army.getUnits()) {
-                float distance = unit.getPosition().dst(x, y);
+                float distance = pos(unit).dst(x, y);
                 if (unit != except && distance < minimumDistance) {
                     minimumDistance = distance;
                     nearest = unit;
@@ -135,5 +143,15 @@ public class Pathfinder {
             }
         }
         return nearest;
+    }
+
+    private Vector2 pos(Unit unit) {
+        mutations.reset();
+        for (AI.Targeting mutation : mutations) {
+            if (mutation.unit == unit && (mutation.action == AI.Action.MOVE || mutation.action == AI.Action.CHARGE)) {
+                return mutation.destination;
+            }
+        }
+        return unit.getPosition();
     }
 }

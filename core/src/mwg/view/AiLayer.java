@@ -14,6 +14,7 @@ public class AiLayer implements Layer {
     private final Vector3 target = new Vector3();
     private final Vector3 destination = new Vector3();
     private final Vector3 ellipse = new Vector3();
+    private final Vector3 limits = new Vector3();
     // Not owned
     private final Camera cam;
     private AI ai = null;
@@ -44,15 +45,21 @@ public class AiLayer implements Layer {
         renderer.begin(ShapeRenderer.ShapeType.Line);
         renderer.setProjectionMatrix(cam.combined);
         for (AI.Targeting targeting : ai.getTargeting()) {
-            float radius = targeting.unit.getRadius();
             BattleLayer.worldToPixelCoordinates(targeting.unit.getPosition(), origin);
             BattleLayer.worldToPixelCoordinates(targeting.target.getPosition(), target);
             BattleLayer.worldToPixelCoordinates(targeting.destination, destination);
+            float radius = targeting.unit.getRadius();
             BattleLayer.worldToPixelCoordinates(radius, radius, ellipse);
+            float range = targeting.unit.getMaxMovement();
+            BattleLayer.worldToPixelCoordinates(range, range, limits);
 
             // Draw targeting indicator
             renderer.setColor(Color.ORANGE);
             renderer.line(origin, target);
+
+            // Draw movement range indicator
+            renderer.setColor(Color.GRAY);
+            renderEllipse(renderer, origin, limits);
 
             // Draw action
             switch (targeting.action) {
