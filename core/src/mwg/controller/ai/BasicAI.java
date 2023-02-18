@@ -1,6 +1,8 @@
 package mwg.controller.ai;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import java.util.Comparator;
 import mwg.controller.Pathfinder;
 import mwg.model.Army;
 import mwg.model.Battle;
@@ -13,6 +15,15 @@ public class BasicAI implements AI {
     private final Array<Unit> units;
     private final Array<Unit> opponents;
     private final Array<Targeting> targeting;
+    private final Comparator<Targeting> comparator = new Comparator<Targeting>() {
+        private final Vector2 vec = new Vector2();
+        @Override
+        public int compare(Targeting first, Targeting second) {
+            float firstDist = vec.set(first.destination).sub(first.unit.getPosition()).len2();
+            float secondDist = vec.set(second.destination).sub(second.unit.getPosition()).len2();
+            return Float.compare(firstDist, secondDist);
+        }
+    };
     // Not owned
     private final Battle battle;
     private final Army thisArmy; //TODO this goes wrong if the battle changes in state
@@ -70,6 +81,7 @@ public class BasicAI implements AI {
         }
 
         // Choose movement destinations
+        targeting.sort(comparator);
         for (Targeting t : targeting) {
             pathfinder.determineMovementDestinationTowards(t.unit, t.target, t.destination);
             t.action = Action.MOVE;
