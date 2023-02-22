@@ -43,7 +43,7 @@ public class TweenEngine {
 
         public TweenAction(Vector3 target, float x, float y, float speed) {
             this.target = target;
-            this.destination.set(x, y, 0);
+            this.destination.set(x, y, target.z);
             this.speed = speed;
         }
 
