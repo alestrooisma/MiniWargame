@@ -1,0 +1,27 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "/home/ale/data/projects/miniwargame-docs/grass.tsx": {
+            "dynamicWrapping": false
+        }
+    },
+    "map.height": 24,
+    "map.lastUsedFormat": "tmx",
+    "map.orientation": null,
+    "map.tileHeight": 72,
+    "map.tileWidth": 72,
+    "map.width": 36,
+    "openFiles": [
+    ],
+    "project": "miniwargame.tiled-project",
+    "recentFiles": [
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}

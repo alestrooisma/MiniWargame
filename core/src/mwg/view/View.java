@@ -2,6 +2,9 @@ package mwg.view;
 
 import aetherdriven.view.LayeredView;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import mwg.controller.BattleController;
@@ -16,11 +19,14 @@ public class View implements Disposable {
 
     public View(BattleController controller) {
         // Create a viewport
-        viewport = new ScreenViewport();
-        Camera cam = viewport.getCamera();
+        OrthographicCamera cam = new OrthographicCamera();
+        viewport = new ScreenViewport(cam);
 
         // Create the view
         view = new LayeredView(0.2f, 0.2f, 0.2f);
+        TiledMap map = new TmxMapLoader().load("maps/default-map.tmx");
+        MapLayer mapLayer = new MapLayer(cam, map);
+        view.add(mapLayer);
         battleLayer = new BattleLayer(controller, cam);
         view.add(battleLayer);
         debugLayer = new DebugLayer(battleLayer, cam);
