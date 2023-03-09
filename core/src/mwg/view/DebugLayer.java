@@ -1,7 +1,6 @@
 package mwg.view;
 
 import aetherdriven.view.Layer;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -20,12 +19,12 @@ public class DebugLayer implements Layer, EventListener {
     private final Vector3 ellipse = new Vector3();
     // Not owned
     private final BattleLayer battleLayer;
-    private final Camera cam;
+    private final Projection projection;
     private boolean enabled = false;
 
-    public DebugLayer(BattleLayer battleLayer, Camera cam) {
+    public DebugLayer(BattleLayer battleLayer, Projection projection) {
         this.battleLayer = battleLayer;
-        this.cam = cam;
+        this.projection = projection;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class DebugLayer implements Layer, EventListener {
         }
 
         renderer.begin(ShapeRenderer.ShapeType.Line);
-        renderer.setProjectionMatrix(cam.combined);
+        renderer.setProjectionMatrix(projection.getCamera().combined);
         renderer.setColor(Color.MAGENTA);
         for (Element e : battleLayer.getElements()) {
             if (e.getSkin().getBounds() != null) {
@@ -52,7 +51,7 @@ public class DebugLayer implements Layer, EventListener {
             }
             if (e.getUnit() != null) {
                 float r = e.getUnit().getRadius();
-                BattleLayer.worldToPixelCoordinates(r, r, ellipse);
+                projection.worldToPixelCoordinates(r, r, ellipse);
                 renderEllipse(renderer, e.getPosition(), ellipse);
             }
         }
@@ -87,7 +86,7 @@ public class DebugLayer implements Layer, EventListener {
 
     @Override
     public void handleRangedAttackEvent(RangedAttackEvent event) {
-        BattleLayer.worldToPixelCoordinates(event.getUnit().getPosition(), origin);
-        BattleLayer.worldToPixelCoordinates(event.getTarget().getPosition(), target);
+        projection.worldToPixelCoordinates(event.getUnit().getPosition(), origin);
+        projection.worldToPixelCoordinates(event.getTarget().getPosition(), target);
     }
 }

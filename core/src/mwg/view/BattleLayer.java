@@ -4,7 +4,6 @@ import aetherdriven.view.Layer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -35,7 +34,7 @@ public class BattleLayer implements Layer, EventListener {
     private final Skin spear = new Skin(new Texture(Gdx.files.internal("spear.png")), 39.5f, 33.5f);
     // Not owned
     private final BattleController controller;
-    private final Camera cam;
+    private final Projection projection;
     private Army player = null;
     // Utilities
     private final Vector2 world = new Vector2();
@@ -43,16 +42,16 @@ public class BattleLayer implements Layer, EventListener {
     private final Vector3 origin = new Vector3();
     private final Vector3 target = new Vector3();
 
-    public BattleLayer(BattleController controller, Camera cam) {
+    public BattleLayer(BattleController controller, Projection projection) {
         this.controller = controller;
-        this.cam = cam;
+        this.projection = projection;
     }
 
     public void add(Element e) {
         elements.add(e);
         // Set the element position to the pixel coordinates matching the unit's world coordinates
         if (e.getUnit() != null) {
-            worldToPixelCoordinates(e.getUnit().getPosition(), e.getPosition());
+            projection.worldToPixelCoordinates(e.getUnit().getPosition(), e.getPosition());
         }
     }
 
@@ -83,7 +82,7 @@ public class BattleLayer implements Layer, EventListener {
         BattleController.Interaction interaction = getInteraction();
 
         // Prepare drawing
-        batch.setProjectionMatrix(cam.combined);
+        batch.setProjectionMatrix(projection.getCamera().combined);
         batch.begin();
 
         // Render all elements (with decoration)
@@ -114,7 +113,7 @@ public class BattleLayer implements Layer, EventListener {
         switch (interaction) {
             case MOVE:
             case CHARGE:
-                worldToPixelCoordinates(controller.getDestination(), pixel);
+                projection.worldToPixelCoordinates(controller.getDestination(), pixel);
                 batch.setColor(1, 1, 1, 0.5f);
                 ellipseTop.draw(batch, pixel);
                 ellipseBottom.draw(batch, pixel);
@@ -128,12 +127,12 @@ public class BattleLayer implements Layer, EventListener {
 
     private BattleController.Interaction getInteraction() {
         // Get unit beneath mouse cursor
-        cam.unproject(pixel.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+        projection.screenToPixelCoordinates(Gdx.input.getX(), Gdx.input.getY(), pixel);
         Element hoveredElement = getElementAt(pixel);
         Unit hoveredUnit = hoveredElement != null ? hoveredElement.getUnit() : null;
 
         // Get interaction from controller (what happens if player presses LMB)
-        pixelToWorldCoordinates(pixel, world);
+        projection.pixelToWorldCoordinates(pixel, world);
         return controller.determineInteraction(world.x, world.y, hoveredUnit);
     }
 
@@ -173,10 +172,13 @@ public class BattleLayer implements Layer, EventListener {
         }
     }
 
-    public void touch(int button, float x, float y) {
+    public void touch(int x, int y, int button) {
         if (button == Buttons.LEFT && engine.isIdle()) {
-            Element touched = getElementAt(x, y);
-            pixelToWorldCoordinates(x, y, world);
+            // Do some coordinate conversions
+            projection.screenToPixelCoordinates(x, y, pixel);
+            projection.pixelToWorldCoordinates(x, y, world);
+            // Find the touched element and let the controller deal with this input
+            Element touched = getElementAt(pixel.x, pixel.y);
             controller.interact(world.x, world.y, touched != null ? touched.getUnit() : null);
         } else if (button == Buttons.RIGHT) {
             controller.cancel();
@@ -189,7 +191,7 @@ public class BattleLayer implements Layer, EventListener {
 
     private Element getElementAt(float x, float y) {
         Element touchedElement = null;
-        pixelToWorldCoordinates(x, y, world);
+        projection.pixelToWorldCoordinates(x, y, world);
 
         // Iterate the elements in reverse to get the topmost element
         // for which the coordinates are in its "hit box".
@@ -213,25 +215,6 @@ public class BattleLayer implements Layer, EventListener {
         return null;
     }
 
-    public static void worldToPixelCoordinates(Vector2 world, Vector3 pixel) {
-        worldToPixelCoordinates(world.x, world.y, pixel);
-    }
-
-    public static void worldToPixelCoordinates(float x, float y, Vector3 pixel) {
-        pixel.x = x * 25;
-        pixel.y = y / 2 * 25;
-        pixel.z = 0;
-    }
-
-    public static void pixelToWorldCoordinates(Vector3 pixel, Vector2 world) {
-        pixelToWorldCoordinates(pixel.x, pixel.y, world);
-    }
-
-    public static void pixelToWorldCoordinates(float x, float y, Vector2 world) {
-        world.x = x / 25f;
-        world.y = y * 2 / 25f;
-    }
-
     @Override
     public void handleStartTurnEvent(StartTurnEvent event) {
         System.out.println("Start turn " + event.getRound() + " for player " + (event.getPlayerIndex() + 1));
@@ -245,15 +228,15 @@ public class BattleLayer implements Layer, EventListener {
     public void handleMoveEvent(MoveEvent event) {
         Element element = findElement(event.getUnit());
         if (element != null) {
-            worldToPixelCoordinates(event.getDestination(), pixel);
+            projection.worldToPixelCoordinates(event.getDestination(), pixel);
             engine.add(element.getPosition(), pixel, 300);
         }
     }
 
     @Override
     public void handleRangedAttackEvent(RangedAttackEvent event) {
-        worldToPixelCoordinates(event.getUnit().getPosition(), origin);
-        worldToPixelCoordinates(event.getTarget().getPosition(), target);
+        projection.worldToPixelCoordinates(event.getUnit().getPosition(), origin);
+        projection.worldToPixelCoordinates(event.getTarget().getPosition(), target);
         origin.z = 20; // TODO determine properly
         target.z = origin.z;
 

@@ -1,42 +1,39 @@
 package mwg.view;
 
 import aetherdriven.view.LayeredView;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import mwg.controller.BattleController;
 
 public class View implements Disposable {
     // Owned
-    private final ScreenViewport viewport;
+    private final Projection projection;
     private final LayeredView view;
     private final BattleLayer battleLayer;
     private final DebugLayer debugLayer;
     private final AiLayer aiLayer;
 
     public View(BattleController controller) {
-        // Create a viewport
-        OrthographicCamera cam = new OrthographicCamera();
-        viewport = new ScreenViewport(cam);
+        // Create a projection
+        OrthographicCamera camera = new OrthographicCamera();
+        Viewport viewport = new ScreenViewport(camera);
+        projection = new BattleProjection(viewport);
 
         // Create the view
         view = new LayeredView(0.2f, 0.2f, 0.2f);
         TiledMap map = new TmxMapLoader().load("maps/default-map.tmx");
-        MapLayer mapLayer = new MapLayer(cam, map);
+        MapLayer mapLayer = new MapLayer(camera, map);
         view.add(mapLayer);
-        battleLayer = new BattleLayer(controller, cam);
+        battleLayer = new BattleLayer(controller, projection);
         view.add(battleLayer);
-        debugLayer = new DebugLayer(battleLayer, cam);
+        debugLayer = new DebugLayer(battleLayer, projection);
         view.add(debugLayer);
-        aiLayer = new AiLayer(cam);
+        aiLayer = new AiLayer(projection);
         view.add(aiLayer);
-    }
-
-    public Camera getCamera() {
-        return viewport.getCamera();
     }
 
     public BattleLayer getBattleLayer() {
@@ -52,7 +49,7 @@ public class View implements Disposable {
     }
 
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        projection.update(width, height);
         view.resize(width, height);
     }
 

@@ -1,7 +1,6 @@
 package mwg.view;
 
 import aetherdriven.view.Layer;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -16,11 +15,11 @@ public class AiLayer implements Layer {
     private final Vector3 ellipse = new Vector3();
     private final Vector3 limits = new Vector3();
     // Not owned
-    private final Camera cam;
+    private final Projection projection;
     private AI ai = null;
 
-    public AiLayer(Camera cam) {
-        this.cam = cam;
+    public AiLayer(Projection projection) {
+        this.projection = projection;
     }
 
     public void setAi(AI ai) {
@@ -47,15 +46,15 @@ public class AiLayer implements Layer {
         }
 
         renderer.begin(ShapeRenderer.ShapeType.Line);
-        renderer.setProjectionMatrix(cam.combined);
+        renderer.setProjectionMatrix(projection.getCamera().combined);
         for (AI.Targeting targeting : ai.getTargeting()) {
-            BattleLayer.worldToPixelCoordinates(targeting.unit.getPosition(), origin);
-            BattleLayer.worldToPixelCoordinates(targeting.target.getPosition(), target);
-            BattleLayer.worldToPixelCoordinates(targeting.destination, destination);
+            projection.worldToPixelCoordinates(targeting.unit.getPosition(), origin);
+            projection.worldToPixelCoordinates(targeting.target.getPosition(), target);
+            projection.worldToPixelCoordinates(targeting.destination, destination);
             float radius = targeting.unit.getRadius();
-            BattleLayer.worldToPixelCoordinates(radius, radius, ellipse);
+            projection.worldToPixelCoordinates(radius, radius, ellipse);
             float range = targeting.unit.getMaxMovement();
-            BattleLayer.worldToPixelCoordinates(range, range, limits);
+            projection.worldToPixelCoordinates(range, range, limits);
 
             // Draw targeting indicator
             renderer.setColor(Color.ORANGE);

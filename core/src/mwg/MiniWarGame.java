@@ -6,7 +6,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
 import mwg.controller.ai.AI;
@@ -103,15 +102,11 @@ public class MiniWarGame extends ApplicationAdapter {
     private class InputHandler extends InputAdapter {
         // Owned
         private int aiNumber = 0;
-        // Utilities
-        private final Vector3 vec = new Vector3();
 
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             if (pointer == 0) {
-                vec.set(screenX, screenY, 0);
-                view.getCamera().unproject(vec);
-                view.getBattleLayer().touch(button, vec.x, vec.y);
+                view.getBattleLayer().touch(screenX, screenY, button);
             }
             return true;
         }
