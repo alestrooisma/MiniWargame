@@ -31,17 +31,19 @@ public class MiniWarGame extends ApplicationAdapter {
     @Override
     public void create() {
         // Create model
+        float cx = 30;
+        float cy = 30;
         Army player = new Army(3);
-        player.add(new Unit("Unit 1", player, 30/25f, 60/25f));
-        player.add(new Unit("Unit 2", player, 40/25f, 160/25f));
-        player.add(new Unit("Unit 3", player, 80/25f, 40/25f));
+        player.add(new Unit("Unit 1", player, cx-11.6f, cy-16.8f));
+        player.add(new Unit("Unit 2", player, cx-11.2f, cy-12.8f));
+        player.add(new Unit("Unit 3", player, cx-9.6f, cy-17.6f));
 
         Army opponent = new Army(3);
-        opponent.add(new Unit("Enemy 1", opponent, 610/25f, 810/25f));
-        opponent.add(new Unit("Enemy 2", opponent, 545/25f, 820/25f));
-        opponent.add(new Unit("Enemy 3", opponent, 590/25f, 740/25f));
+        opponent.add(new Unit("Enemy 1", opponent, cx+11.6f, cy+13.2f));
+        opponent.add(new Unit("Enemy 2", opponent, cx+9f, cy+13.6f));
+        opponent.add(new Unit("Enemy 3", opponent, cx+10.8f, cy+10.4f));
 
-        Battle battle = new Battle();
+        Battle battle = new Battle(cx-20, cy-20, 40, 40);
         battle.add(player);
         battle.add(opponent);
 

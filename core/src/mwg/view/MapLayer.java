@@ -26,6 +26,7 @@ public class MapLayer implements Layer {
 
     @Override
     public void render() {
+        camera.update(); // First layer to be rendered, so updating the camera here...
         renderer.setView(camera);
         renderer.render();
     }

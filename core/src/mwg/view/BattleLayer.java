@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import mwg.controller.BattleController;
+import mwg.controller.CameraController;
 import mwg.model.Army;
 import mwg.model.Unit;
 import mwg.model.events.EndTurnEvent;
@@ -27,6 +28,7 @@ public class BattleLayer implements Layer, EventListener {
     private final TextRenderer textRenderer = new TextRenderer(batch);
     private final Array<Element> elements = new Array<>();
     private final TweenEngine engine = new TweenEngine();
+    private final CameraController cameraController;
     private final Skin ellipseTop = new Skin(new Texture(Gdx.files.internal("ellipse-top.png")), 36, 17);
     private final Skin ellipseBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 17);
     private final Skin targetTop = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-top.png")), 36, 17);
@@ -45,6 +47,8 @@ public class BattleLayer implements Layer, EventListener {
     public BattleLayer(BattleController controller, Projection projection) {
         this.controller = controller;
         this.projection = projection;
+        this.cameraController = controller.createCameraController(projection);
+        this.cameraController.center();
     }
 
     public void add(Element e) {
@@ -65,6 +69,21 @@ public class BattleLayer implements Layer, EventListener {
 
     @Override
     public void update(float dt) {
+        // Ugly temporary camera controls
+        final float v = 10;
+        if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+            cameraController.move(-v*dt, 0);
+        }
+        if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+            cameraController.move(v*dt, 0);
+        }
+        if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+            cameraController.move(0, -v*dt);
+        }
+        if (Gdx.input.isKeyPressed(Keys.UP)) {
+            cameraController.move(0, v*dt);
+        }
+
         // Ugly hack to remove animation-only elements when they are not needed anymore
         if (engine.isIdle()) {
             for (Element e : elements) {

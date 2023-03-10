@@ -11,6 +11,7 @@ import mwg.model.events.EndTurnEvent;
 import mwg.model.events.MoveEvent;
 import mwg.model.events.RangedAttackEvent;
 import mwg.model.events.StartTurnEvent;
+import mwg.view.Projection;
 
 public class BattleController {
     // Owned
@@ -44,6 +45,10 @@ public class BattleController {
 
     public EventDealer getDealer() {
         return dealer;
+    }
+
+    public CameraController createCameraController(Projection projection) {
+        return new CameraController(state, projection);
     }
 
     public Interaction determineInteraction(float x, float y, Unit touched) {

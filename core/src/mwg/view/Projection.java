@@ -17,6 +17,10 @@ public abstract class Projection {
         return viewport.getCamera();
     }
 
+    public Viewport getViewport() {
+        return viewport;
+    }
+
     public void update (int screenWidth, int screenHeight) {
         viewport.update(screenWidth, screenHeight);
     }
