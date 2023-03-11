@@ -8,10 +8,12 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import mwg.controller.BattleController;
+import mwg.controller.CameraController;
 
 public class View implements Disposable {
     // Owned
     private final Projection projection;
+    private final CameraController cameraController;
     private final LayeredView view;
     private final BattleLayer battleLayer;
     private final DebugLayer debugLayer;
@@ -23,14 +25,17 @@ public class View implements Disposable {
         Viewport viewport = new ScreenViewport(camera);
         projection = new BattleProjection(viewport);
 
+        // Create camera controller
+        cameraController = controller.createCameraController(projection);
+
         // Create the view
         view = new LayeredView(0.2f, 0.2f, 0.2f);
         TiledMap map = new TmxMapLoader().load("maps/default-map.tmx");
         MapLayer mapLayer = new MapLayer(camera, map);
         view.add(mapLayer);
-        battleLayer = new BattleLayer(controller, projection);
+        battleLayer = new BattleLayer(controller, projection, cameraController);
         view.add(battleLayer);
-        debugLayer = new DebugLayer(battleLayer, projection);
+        debugLayer = new DebugLayer(battleLayer, projection, cameraController);
         view.add(debugLayer);
         aiLayer = new AiLayer(projection);
         view.add(aiLayer);
@@ -50,6 +55,7 @@ public class View implements Disposable {
 
     public void resize(int width, int height) {
         projection.update(width, height);
+        cameraController.snap();
         view.resize(width, height);
     }
 

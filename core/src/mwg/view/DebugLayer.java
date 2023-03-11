@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import mwg.controller.CameraController;
 import mwg.model.events.EndTurnEvent;
 import mwg.model.events.EventListener;
 import mwg.model.events.MoveEvent;
@@ -17,14 +18,17 @@ public class DebugLayer implements Layer, EventListener {
     private final Vector3 origin = new Vector3();
     private final Vector3 target = new Vector3();
     private final Vector3 ellipse = new Vector3();
+    private final Rectangle bounds = new Rectangle();
     // Not owned
+    private final CameraController cameraController;
     private final BattleLayer battleLayer;
     private final Projection projection;
     private boolean enabled = false;
 
-    public DebugLayer(BattleLayer battleLayer, Projection projection) {
+    public DebugLayer(BattleLayer battleLayer, Projection projection, CameraController cameraController) {
         this.battleLayer = battleLayer;
         this.projection = projection;
+        this.cameraController = cameraController;
     }
 
     @Override
@@ -43,6 +47,7 @@ public class DebugLayer implements Layer, EventListener {
 
         renderer.begin(ShapeRenderer.ShapeType.Line);
         renderer.setProjectionMatrix(projection.getCamera().combined);
+
         renderer.setColor(Color.MAGENTA);
         for (Element e : battleLayer.getElements()) {
             if (e.getSkin().getBounds() != null) {
@@ -56,6 +61,11 @@ public class DebugLayer implements Layer, EventListener {
             }
         }
         renderer.line(origin, target);
+
+        renderer.setColor(Color.RED);
+        projection.worldToPixelCoordinates(cameraController.getBounds(), bounds);
+        renderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+
         renderer.end();
     }
 

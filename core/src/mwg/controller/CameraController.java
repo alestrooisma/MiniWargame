@@ -23,6 +23,10 @@ public class CameraController {
         set(bounds.x + bounds.width / 2f, bounds.y + bounds.height / 2f);
     }
 
+    public void set(Vector2 position) {
+        set(position.x, position.y);
+    }
+
     public void set(float x, float y) {
         // Get viewport with in world coordinates
         projection.pixelToWorldCoordinates(projection.getViewport().getWorldWidth() / 2, projection.getViewport().getWorldHeight() / 2, world);
@@ -37,8 +41,16 @@ public class CameraController {
         float maxY = bounds.y + bounds.height - halfWorldHeight;
 
         // Limit camera position
-        x = MathUtils.clamp(x, minX, maxX);
-        y = MathUtils.clamp(y, minY, maxY);
+        if (minX < maxX) {
+            x = MathUtils.clamp(x, minX, maxX);
+        } else {
+            x = bounds.x + bounds.width / 2;
+        }
+        if (minY < maxY) {
+            y = MathUtils.clamp(y, minY, maxY);
+        } else {
+            y = bounds.y + bounds.height / 2;
+        }
 
         // Actually set the camera position
         projection.worldToPixelCoordinates(x, y, pixel);
@@ -48,5 +60,14 @@ public class CameraController {
     public void move(float dx, float dy) {
         projection.pixelToWorldCoordinates(projection.getCamera().position, world);
         set(world.x + dx, world.y + dy);
+    }
+
+    public void snap() {
+        projection.pixelToWorldCoordinates(projection.getCamera().position, world);
+        set(world);
+    }
+
+    public Rectangle getBounds() {
+        return state.getBattle().getBounds();
     }
 }

@@ -44,10 +44,10 @@ public class BattleLayer implements Layer, EventListener {
     private final Vector3 origin = new Vector3();
     private final Vector3 target = new Vector3();
 
-    public BattleLayer(BattleController controller, Projection projection) {
+    public BattleLayer(BattleController controller, Projection projection, CameraController cameraController) {
         this.controller = controller;
         this.projection = projection;
-        this.cameraController = controller.createCameraController(projection);
+        this.cameraController = cameraController;
         this.cameraController.center();
     }
 
