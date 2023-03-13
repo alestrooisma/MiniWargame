@@ -4,6 +4,7 @@ import aetherdriven.view.Layer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -290,54 +291,22 @@ public class BattleLayer implements Layer, EventListener {
         return inputProcessor;
     }
 
-    private class BattleLayerInputProcessor implements InputProcessor {
-
+    private class BattleLayerInputProcessor extends InputAdapter {
         @Override
-        public boolean keyDown(int keycode) {
-            System.out.println("Key '" + Keys.toString(keycode) + "' down.");
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            if (pointer == 0) {
+                touch(screenX, screenY, button);
+            }
             return true;
         }
 
         @Override
         public boolean keyUp(int keycode) {
-            System.out.println("Key '" + Keys.toString(keycode) + "' up.");
-            return true;
-        }
-
-        @Override
-        public boolean keyTyped(char character) {
-            System.out.println("Key '" + character + "' typed.");
-            return true;
-        }
-
-        @Override
-        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            System.out.println("Button " + button + " DOWN at (" + screenX + ", " + screenY + ").");
-            return true;
-        }
-
-        @Override
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            System.out.println("Button " + button + " UP at (" + screenX + ", " + screenY + ").");
-            return true;
-        }
-
-        @Override
-        public boolean touchDragged(int screenX, int screenY, int pointer) {
-            System.out.println("Dragged to (" + screenX + ", " + screenY + ").");
-            return true;
-        }
-
-        @Override
-        public boolean mouseMoved(int screenX, int screenY) {
-            System.out.println("Moved to (" + screenX + ", " + screenY + ").");
-            return true;
-        }
-
-        @Override
-        public boolean scrolled(float amountX, float amountY) {
-            System.out.println("Scrolled by (" + amountX + ", " + amountY + ").");
-            return true;
+            if (keycode == Keys.ENTER) {
+                controller.endTurn();
+                return true;
+            }
+            return false;
         }
     }
 }

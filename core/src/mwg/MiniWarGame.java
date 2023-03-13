@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -23,7 +24,6 @@ import mwg.view.View;
 
 public class MiniWarGame extends ApplicationAdapter {
     // Owned
-    private BattleController controller;
     private View view;
     private Skin skin;
     private Array<AI> aiList;
@@ -57,7 +57,7 @@ public class MiniWarGame extends ApplicationAdapter {
         aiList.add(new BasicAI(state, state.getBattle().getArmies().get(1)));
 
         // Create the controller
-        controller = new BattleController(state, aiList);
+        BattleController controller = new BattleController(state, aiList);
 
         // Create the view
         view = new View(controller);
@@ -79,7 +79,10 @@ public class MiniWarGame extends ApplicationAdapter {
         controller.getDealer().register(view.getDebugLayer());
 
         // Set up an input event listener
-//        Gdx.input.setInputProcessor(new InputHandler());
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(view.getView());
+        inputMultiplexer.addProcessor(new InputHandler());
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
         // Start the first turn
         controller.getDealer().deal(new StartTurnEvent(0, 1));
@@ -106,25 +109,11 @@ public class MiniWarGame extends ApplicationAdapter {
         private int aiNumber = 0;
 
         @Override
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            if (pointer == 0) {
-                view.getBattleLayer().touch(screenX, screenY, button);
-            }
-            return true;
-        }
-
-        @Override
         public boolean keyUp(int keycode) {
             switch (keycode) {
-                case Keys.ENTER:
-                    controller.endTurn();
-                    return true;
                 case Keys.F11:
                     aiNumber = (aiNumber + 1) % aiList.size;
                     view.getAiLayer().setAi(aiList.get(aiNumber));
-                    return true;
-                case Keys.F12:
-                    view.getDebugLayer().toggle();
                     return true;
                 case Keys.ESCAPE:
                     Gdx.app.exit();

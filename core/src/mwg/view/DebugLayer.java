@@ -1,6 +1,8 @@
 package mwg.view;
 
 import aetherdriven.view.Layer;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -15,6 +17,7 @@ import mwg.model.events.StartTurnEvent;
 
 public class DebugLayer implements Layer, EventListener {
     // Owned
+    private final InputProcessor inputProcessor = new DebugLayerInputProcessor();
     private final ShapeRenderer renderer = new ShapeRenderer();
     private final Vector3 origin = new Vector3();
     private final Vector3 target = new Vector3();
@@ -72,7 +75,7 @@ public class DebugLayer implements Layer, EventListener {
 
     @Override
     public InputProcessor getInputProcessor() {
-        return DEFAULT_INPUT_PROCESSOR;
+        return inputProcessor;
     }
 
     private static void renderEllipse(ShapeRenderer renderer, Vector3 center, Vector3 axes) {
@@ -104,5 +107,17 @@ public class DebugLayer implements Layer, EventListener {
     public void handleRangedAttackEvent(RangedAttackEvent event) {
         projection.worldToPixelCoordinates(event.getUnit().getPosition(), origin);
         projection.worldToPixelCoordinates(event.getTarget().getPosition(), target);
+    }
+
+    private class DebugLayerInputProcessor extends InputAdapter {
+
+        @Override
+        public boolean keyUp(int keycode) {
+            if (keycode == Input.Keys.F12) {
+                toggle();
+                return true;
+            }
+            return false;
+        }
     }
 }
