@@ -1,6 +1,7 @@
 package mwg.view;
 
 import aetherdriven.view.Layer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -86,5 +87,10 @@ public class AiLayer implements Layer {
     @Override
     public void dispose() {
         renderer.dispose();
+    }
+
+    @Override
+    public InputProcessor getInputProcessor() {
+        return DEFAULT_INPUT_PROCESSOR;
     }
 }

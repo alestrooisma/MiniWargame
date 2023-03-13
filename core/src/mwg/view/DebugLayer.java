@@ -1,6 +1,7 @@
 package mwg.view;
 
 import aetherdriven.view.Layer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -67,6 +68,11 @@ public class DebugLayer implements Layer, EventListener {
         renderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
 
         renderer.end();
+    }
+
+    @Override
+    public InputProcessor getInputProcessor() {
+        return DEFAULT_INPUT_PROCESSOR;
     }
 
     private static void renderEllipse(ShapeRenderer renderer, Vector3 center, Vector3 axes) {

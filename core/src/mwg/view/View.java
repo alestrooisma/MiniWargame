@@ -1,6 +1,7 @@
 package mwg.view;
 
 import aetherdriven.view.LayeredView;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -39,6 +40,9 @@ public class View implements Disposable {
         view.add(debugLayer);
         aiLayer = new AiLayer(projection);
         view.add(aiLayer);
+
+        // Set up an input event listener
+        Gdx.input.setInputProcessor(view);
     }
 
     public BattleLayer getBattleLayer() {

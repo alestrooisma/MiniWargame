@@ -4,6 +4,7 @@ import aetherdriven.view.Layer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +25,7 @@ import mwg.model.events.StartTurnEvent;
 
 public class BattleLayer implements Layer, EventListener {
     // Owned
+    private final InputProcessor inputProcessor = new BattleLayerInputProcessor();
     private final SpriteBatch batch = new SpriteBatch();
     private final TextRenderer textRenderer = new TextRenderer(batch);
     private final Array<Element> elements = new Array<>();
@@ -281,5 +283,61 @@ public class BattleLayer implements Layer, EventListener {
      */
     Array<Element> getElements() {
         return elements;
+    }
+
+    @Override
+    public InputProcessor getInputProcessor() {
+        return inputProcessor;
+    }
+
+    private class BattleLayerInputProcessor implements InputProcessor {
+
+        @Override
+        public boolean keyDown(int keycode) {
+            System.out.println("Key '" + Keys.toString(keycode) + "' down.");
+            return true;
+        }
+
+        @Override
+        public boolean keyUp(int keycode) {
+            System.out.println("Key '" + Keys.toString(keycode) + "' up.");
+            return true;
+        }
+
+        @Override
+        public boolean keyTyped(char character) {
+            System.out.println("Key '" + character + "' typed.");
+            return true;
+        }
+
+        @Override
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            System.out.println("Button " + button + " DOWN at (" + screenX + ", " + screenY + ").");
+            return true;
+        }
+
+        @Override
+        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            System.out.println("Button " + button + " UP at (" + screenX + ", " + screenY + ").");
+            return true;
+        }
+
+        @Override
+        public boolean touchDragged(int screenX, int screenY, int pointer) {
+            System.out.println("Dragged to (" + screenX + ", " + screenY + ").");
+            return true;
+        }
+
+        @Override
+        public boolean mouseMoved(int screenX, int screenY) {
+            System.out.println("Moved to (" + screenX + ", " + screenY + ").");
+            return true;
+        }
+
+        @Override
+        public boolean scrolled(float amountX, float amountY) {
+            System.out.println("Scrolled by (" + amountX + ", " + amountY + ").");
+            return true;
+        }
     }
 }

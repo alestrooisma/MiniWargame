@@ -1,15 +1,16 @@
 package aetherdriven.view;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import java.util.LinkedList;
 
-public class LayeredView implements Disposable {
+public class LayeredView implements InputProcessor, Disposable {
     // Owned
     private final Color clearColor;
-    private final LinkedList<Layer> layers = new LinkedList<>();
+    private final Array<Layer> layers = new Array<>();
 
     public LayeredView() {
         this(0, 0, 0);
@@ -25,16 +26,8 @@ public class LayeredView implements Disposable {
         clearColor.b = b;
     }
 
-    public boolean add(Layer l) {
-        return layers.add(l);
-    }
-
-    public boolean remove(Layer l) {
-        return layers.remove(l);
-    }
-
-    public void clearLayers() {
-        layers.clear();
+    public void add(Layer l) {
+        layers.add(l);
     }
 
     public void resize(int width, int height) {
@@ -60,5 +53,77 @@ public class LayeredView implements Disposable {
         for (Layer layer : layers) {
             layer.dispose();
         }
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().keyDown(keycode);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().keyUp(keycode);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().keyTyped(character);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().touchDown(screenX, screenY, pointer, button);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().touchUp(screenX, screenY, pointer, button);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().touchDragged(screenX, screenY, pointer);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().mouseMoved(screenX, screenY);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        boolean handled = false;
+        for (int i = layers.size - 1; !handled && i >= 0; i--) {
+            handled = layers.get(i).getInputProcessor().scrolled(amountX, amountY);
+        }
+        return handled;
     }
 }

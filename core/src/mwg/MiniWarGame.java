@@ -79,7 +79,7 @@ public class MiniWarGame extends ApplicationAdapter {
         controller.getDealer().register(view.getDebugLayer());
 
         // Set up an input event listener
-        Gdx.input.setInputProcessor(new InputHandler());
+//        Gdx.input.setInputProcessor(new InputHandler());
 
         // Start the first turn
         controller.getDealer().deal(new StartTurnEvent(0, 1));
