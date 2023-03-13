@@ -194,19 +194,6 @@ public class BattleLayer implements Layer, EventListener {
         }
     }
 
-    public void touch(int x, int y, int button) {
-        if (button == Buttons.LEFT && engine.isIdle()) {
-            // Do some coordinate conversions
-            projection.screenToPixelCoordinates(x, y, pixel);
-            projection.pixelToWorldCoordinates(x, y, world);
-            // Find the touched element and let the controller deal with this input
-            Element touched = getElementAt(pixel.x, pixel.y);
-            controller.interact(world.x, world.y, touched != null ? touched.getUnit() : null);
-        } else if (button == Buttons.RIGHT) {
-            controller.cancel();
-        }
-    }
-
     private Element getElementAt(Vector3 position) {
         return getElementAt(position.x, position.y);
     }
@@ -294,15 +281,29 @@ public class BattleLayer implements Layer, EventListener {
     private class BattleLayerInputProcessor extends InputAdapter {
         @Override
         public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            if (pointer == 0) {
-                touch(screenX, screenY, button);
+            if (pointer != 0) {
+                return false;
             }
+
+            if (button == Buttons.LEFT && engine.isIdle()) {
+                // Do some coordinate conversions
+                projection.screenToPixelCoordinates(screenX, screenY, pixel);
+                projection.pixelToWorldCoordinates(pixel.x, pixel.y, world);
+                // Find the touched element and let the controller deal with this input
+                Element touched = getElementAt(pixel.x, pixel.y);
+                controller.interact(world.x, world.y, touched != null ? touched.getUnit() : null);
+            } else if (button == Buttons.RIGHT) {
+                controller.cancel();
+            } else {
+                return false;
+            }
+
             return true;
         }
 
         @Override
         public boolean keyUp(int keycode) {
-            if (keycode == Keys.ENTER) {
+            if (keycode == Keys.ENTER && engine.isIdle()) {
                 controller.endTurn();
                 return true;
             }
