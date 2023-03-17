@@ -33,12 +33,14 @@ public class MiniWarGame extends ApplicationAdapter {
     @Override
     public void create() {
         // Create model
-        UnitType spearman = new UnitType("spearman");
-
         float cx = 30;
         float cy = 30;
+
+        UnitType spearman = new UnitType("spearman");
+        UnitType archer = new UnitType("archer");
+
         Army player = new Army(3);
-        player.add(new Unit(spearman, "Unit 1", player, cx-11.6f, cy-16.8f));
+        player.add(new Unit(archer, "Unit 1", player, cx-11.6f, cy-16.8f));
         player.add(new Unit(spearman, "Unit 2", player, cx-11.2f, cy-12.8f));
         player.add(new Unit(spearman, "Unit 3", player, cx-9.6f, cy-17.6f));
 
@@ -68,9 +70,8 @@ public class MiniWarGame extends ApplicationAdapter {
 
         // Prepare resources
         resources = ResourceContainer.create();
-        Texture texture = new Texture(Gdx.files.internal("spearman.png"));
-        Skin skin = new Skin(texture, 37, 17, new Rectangle(-16, -3, 30, 42));
-        resources.add(spearman.getName(), skin);
+        resources.add(spearman.getName(), new Skin(new Texture(Gdx.files.internal("spearman.png")), 37, 17, new Rectangle(-16, -3, 30, 42)));
+        resources.add(archer.getName(), new Skin(new Texture(Gdx.files.internal("bowman.png")), 36, 17, new Rectangle(-16, -3, 29, 41)));
         resources.add("spear", new Skin(new Texture(Gdx.files.internal("spear.png")), 39.5f, 33.5f));
 
         // Populate Battle Layer
