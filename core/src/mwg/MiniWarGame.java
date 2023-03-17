@@ -15,33 +15,37 @@ import mwg.model.Army;
 import mwg.model.Battle;
 import mwg.model.GameState;
 import mwg.model.Unit;
+import mwg.model.UnitType;
 import mwg.model.events.ModelEventListener;
 import mwg.model.events.StartTurnEvent;
 import mwg.view.BattleLayer;
 import mwg.view.Element;
+import mwg.view.ResourceContainer;
 import mwg.view.Skin;
 import mwg.view.View;
 
 public class MiniWarGame extends ApplicationAdapter {
     // Owned
+    private ResourceContainer resources;
     private View view;
-    private Skin skin;
     private Array<AI> aiList;
 
     @Override
     public void create() {
         // Create model
+        UnitType spearman = new UnitType("spearman");
+
         float cx = 30;
         float cy = 30;
         Army player = new Army(3);
-        player.add(new Unit("Unit 1", player, cx-11.6f, cy-16.8f));
-        player.add(new Unit("Unit 2", player, cx-11.2f, cy-12.8f));
-        player.add(new Unit("Unit 3", player, cx-9.6f, cy-17.6f));
+        player.add(new Unit(spearman, "Unit 1", player, cx-11.6f, cy-16.8f));
+        player.add(new Unit(spearman, "Unit 2", player, cx-11.2f, cy-12.8f));
+        player.add(new Unit(spearman, "Unit 3", player, cx-9.6f, cy-17.6f));
 
         Army opponent = new Army(3);
-        opponent.add(new Unit("Enemy 1", opponent, cx+11.6f, cy+13.2f));
-        opponent.add(new Unit("Enemy 2", opponent, cx+9f, cy+13.6f));
-        opponent.add(new Unit("Enemy 3", opponent, cx+10.8f, cy+10.4f));
+        opponent.add(new Unit(spearman, "Enemy 1", opponent, cx+11.6f, cy+13.2f));
+        opponent.add(new Unit(spearman, "Enemy 2", opponent, cx+9f, cy+13.6f));
+        opponent.add(new Unit(spearman, "Enemy 3", opponent, cx+10.8f, cy+10.4f));
 
         Battle battle = new Battle(cx-20, cy-20, 40, 40);
         battle.add(player);
@@ -62,13 +66,17 @@ public class MiniWarGame extends ApplicationAdapter {
         // Create the view
         view = new View(controller);
 
+        // Prepare resources
+        resources = ResourceContainer.create();
+        Texture texture = new Texture(Gdx.files.internal("spearman.png"));
+        Skin skin = new Skin(texture, 37, 17, new Rectangle(-16, -3, 30, 42));
+        resources.add(spearman.getName(), skin);
+
         // Populate Battle Layer
         BattleLayer battleLayer = view.getBattleLayer();
-        Texture texture = new Texture(Gdx.files.internal("spearman.png"));
-        skin = new Skin(texture, 37, 17, new Rectangle(-16, -3, 30, 42));
         for (Army army : battle.getArmies()) {
             for (Unit unit : army.getUnits()) {
-                battleLayer.add(new Element(unit, skin));
+                battleLayer.add(new Element(unit));
             }
         }
         battleLayer.setPlayerArmy(player);
@@ -101,7 +109,7 @@ public class MiniWarGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         view.dispose();
-        skin.dispose();
+        resources.dispose();
     }
 
     private class InputHandler extends InputAdapter {

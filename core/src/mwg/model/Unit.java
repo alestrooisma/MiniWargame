@@ -4,24 +4,30 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Unit {
     // Owned
+    private final UnitType type;
     private final String name;
     private final Army army;
     private final Vector2 position;
     private final float radius;
 
-    public Unit(String name, Army army, float x, float y) {
-        this(name, army, new Vector2(x, y));
+    public Unit(UnitType type, String name, Army army, float x, float y) {
+        this(type, name, army, new Vector2(x, y));
     }
 
-    public Unit(String name, Army army, Vector2 position) {
-        this(name, army, position, 1);
+    public Unit(UnitType type, String name, Army army, Vector2 position) {
+        this(type, name, army, position, 1);
     }
 
-    public Unit(String name, Army army, Vector2 position, float radius) {
+    public Unit(UnitType type, String name, Army army, Vector2 position, float radius) {
+        this.type = type;
         this.name = name;
         this.army = army;
         this.position = position;
         this.radius = radius;
+    }
+
+    public UnitType getType() {
+        return type;
     }
 
     public String getName() {
