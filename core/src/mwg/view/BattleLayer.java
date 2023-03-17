@@ -36,7 +36,6 @@ public class BattleLayer implements Layer, EventListener {
     private final Skin ellipseBottom = new Skin(new Texture(Gdx.files.internal("ellipse-bottom.png")), 36, 17);
     private final Skin targetTop = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-top.png")), 36, 17);
     private final Skin targetBottom = new Skin(new Texture(Gdx.files.internal("ellipse-nozoc-bottom.png")), 36, 17);
-    private final Skin spear = new Skin(new Texture(Gdx.files.internal("spear.png")), 39.5f, 33.5f);
     // Not owned
     private final BattleController controller;
     private final Projection projection;
@@ -189,9 +188,14 @@ public class BattleLayer implements Layer, EventListener {
     @Override
     public void dispose() {
         batch.dispose();
+        textRenderer.dispose();
         for (Element e : elements) {
             e.dispose();
         }
+        ellipseTop.dispose();
+        ellipseBottom.dispose();
+        targetTop.dispose();
+        targetBottom.dispose();
     }
 
     private Element getElementAt(Vector3 position) {
@@ -250,7 +254,7 @@ public class BattleLayer implements Layer, EventListener {
         target.z = origin.z;
 
         // Create the projectile element
-        Element projectile = new Element(null, spear);
+        Element projectile = new Element("spear");
         projectile.setPosition(origin);
 
         // Set the rotation of the projectile

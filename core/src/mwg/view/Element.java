@@ -16,6 +16,10 @@ public class Element implements Comparable<Element>, Disposable {
         this(unit, ResourceContainer.instance.get(unit.getType().getName()));
     }
 
+    public Element(String skinId) {
+        this(null, ResourceContainer.instance.get(skinId));
+    }
+
     public Element(Unit unit, Skin skin) {
         this.unit = unit;
         this.skin = skin;
